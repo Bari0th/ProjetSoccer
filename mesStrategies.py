@@ -1,21 +1,24 @@
 from math import *
 from soccersimulator import *
 
+def getGoal(id_team):
+	if id_team == 1 :
+		return Vector2D(GAME_WIDTH, GAME_HEIGHT/2)
+	else : return Vector2D(0, GAME_HEIGHT/2)
+
 class StrategyFonceur(Strategy):
 	def _init_(self, name="Fonceur"):
 		self.name = name
-
+	
 	def compute_strategy(self, state, id_team, id_player):
-		if id_team == 1 :
-			goal = Vector2D(GAME_WIDTH, GAME_HEIGHT/2)
-		else : goal = Vector2D(0, GAME_HEIGHT/2)
+		goal = getGoal(id_team)
 		
-		acceleration = 0.1
+		acceleration = 1
 		
 		posPlayer = state.player_state(id_team, id_player).position
 		posBall = state.ball.position
 		
-		force = 1
+		force = 3.5
 
 		move = posBall - posPlayer
 		move.normalize() 
@@ -24,3 +27,18 @@ class StrategyFonceur(Strategy):
 		shoot.normalize()
 
 		return SoccerAction(move * acceleration, shoot * force)
+
+class StrategyGoal(Strategy):
+	def _init_(self, name="Defenseur"):
+		self.name = name
+
+	def compute_strategy(self, state, id_team, id_player):
+		goal = getGoal(id_team)
+		
+		posBall = state.ball.position
+
+		posPlay = state.player_state(id_team, id_player)
+
+		#ajouter l'angle / 2 puis (distance entre but et balle) /2 + posBut
+
+		
