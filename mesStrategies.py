@@ -12,9 +12,8 @@ def getOurGoal(id_team):
 	else : return Vector2D(GAME_WIDTH, GAME_HEIGHT/2)
 	
 def getAngle(vector):
-	return copysign( acos(vector.x/vector.norm), vector.y) 
-	
-	
+	return copysign( acos(vector.x/vector.norm), vector.y)
+
 def runThere(player, targetedPos):
 	return targetedPos - player.position
 	
@@ -32,11 +31,31 @@ def goThere(player, targetedPos):
 		return -1. * vitesse
 	
 	return traj
+
+def isClosest(player, opponent, posBall):
+	return (posBall - player.position).norm < (posBall - opponent.position).norm
 	
 def getPlayersList(id_team, state):
 	return state.states[id_team]
+
+def getOthersPlayers(player, id_team, state):
+	return [ ( it , ip ) for ( it , ip ) in state.players if it != id_team or ip != id_player]	
+
+def isBallOwner(player, id_team, state):
+	posBall = state.ball.position
+	distanceBallPlayer = (posBall - player.position).norm
+	playerList = getOthersPlayers(player, id_team, state)
+	for otherPlayer in playerList : 
+		if (posBall - otherPlayer.position).norm <= distanceBallPlayer:
+			return False
+	return True
+	
+	
 	
 def getDistanceArret(vitesse):
+	if vitesse <= 0 or maxPlayerAcceleration <= 0:
+		return 0
+
 	somme = 0
 	while vitesse >= 0:
 		somme += vitesse
@@ -101,12 +120,11 @@ class StrategyGoal(Strategy):
 		
 		ballToGoalTop = goalTop - posBall
 		ballToGoalBot = goalBot - posBall
+		print("Joueur ",id_team," : ", ballToGoalTop.angle)
+		angle = (ballToGoalTop.angle + ballToGoalBot.angle)/2.
+		vect = Vector2D(norm = ballToGoalTop.x/2., angle = angle)
 		
-		angle = (getAngle(ballToGoalTop) + getAngle(ballToGoalBot)) / 2.
-		
-		pos = posBall + Vector2D(angle = angle, norm = posBall.distance(ourGoal) / 2.3)
-		
-		move = goThere(state.player_state(id_team, id_player), (ballToGoalTop + ballToGoalBot) / 4 + posBall)
+		move = goThere(state.player_state(id_team, id_player), vect+posBall)
 		
 		return SoccerAction(move, Vector2D(0,0))
 
