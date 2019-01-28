@@ -70,3 +70,6 @@ def getDistanceArret(vitesse):
 		somme += vitesse
 		vitesse -= maxPlayerAcceleration
 	return somme
+
+def predictDistanceBall(player, state):
+	return state.ball.position + state.ball.vitesse * 5 * ((player.position - state.ball.position).norm) / 80.

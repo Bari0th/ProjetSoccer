@@ -9,15 +9,10 @@ class StrategyFonceur(Strategy):
 	def compute_strategy(self, state, id_team, id_player):
 		goal = getOpponentGoal(id_team)
 		
+		player = state.player_state(id_team, id_player)
 		acceleration = 1
-		
-		posPlayer = state.player_state(id_team, id_player).position
-		posBall = state.ball.position + state.ball.vitesse * 10
-		
 		force = 3.5
-
-		move = runThere( state.player_state(id_team, id_player), posBall)
-
+		move = runThere( state.player_state(id_team, id_player), predictDistanceBall(player, state))
 		shoot = Vector2D(0, 0)
 		if canShoot(state, id_team, id_player) :
 			shoot = calculShoot(state, id_team, id_player, getOpponentGoal(id_team), force)
@@ -30,13 +25,10 @@ class StrategyFonceurBis(Strategy):
 	def compute_strategy(self, state, id_team, id_player):
 		goal = getOpponentGoal(id_team)
 		
+		player = state.player_state(id_team, id_player)
 		acceleration = 1
-		
-		posBall = state.ball.position + state.ball.vitesse * 10
-		
 		force = 3.5
-
-		move = runThere( state.player_state(id_team, id_player), posBall)
+		move = runThere( state.player_state(id_team, id_player), predictDistanceBall(player, state))
 
 		shoot = Vector2D(0, 0)
 		if canShoot(state, id_team, id_player) :
@@ -45,7 +37,7 @@ class StrategyFonceurBis(Strategy):
 
 		
 class StrategyGoal(Strategy):
-	def _init_(self, name="Defenseur"):
+	def _init_(self, name="Goal"):
 		self.name = name
 
 	def compute_strategy(self, state, id_team, id_player):
@@ -53,8 +45,8 @@ class StrategyGoal(Strategy):
 		if isBallOwner(id_player, id_team, state) :
 			goal = getOpponentGoal(id_team)
 			force = 10
-			posBall = state.ball.position + state.ball.vitesse * 5
-			move = runThere( state.player_state(id_team, id_player), posBall)
+			player = state.player_state(id_team, id_player)
+			move = runThere( state.player_state(id_team, id_player), predictDistanceBall(player, state))
 			shoot = Vector2D(0, 0)
 			if canShoot(state, id_team, id_player) :
 				shoot = calculShoot(state, id_team, id_player, getOpponentGoal(id_team), force)
@@ -72,8 +64,15 @@ class StrategyGoal(Strategy):
 		vect = Vector2D(norm = 1./cos(angle)*ballToGoalBot.x/2., angle = angle)
 		
 		move = goThere(state.player_state(id_team, id_player), vect+posBall)
+		shoot = Vector2D(0, 0)
+		if canShoot(state, id_team, id_player) :
+			shoot = calculShoot(state, id_team, id_player, getOpponentGoal(id_team), force)
+		return SoccerAction(move, shoot)
+
+"""class StrategyAttaquant (Strategy):
+	def _init_(self, name="Attaquant"):
+		self.name = name
+
+	def compute_strategy(self, state, id_team, id_player):
 		
-		return SoccerAction(move, Vector2D(0,0))
-
-
-		#ajouter l'angle / 2 puis (distance entre but et balle) /2 + posBut
+"""
