@@ -1,3 +1,6 @@
+from math import *
+from soccersimulator import *
+
 def canShoot(state, id_team, id_player):
     return (state.ball.position - state.player_state(id_team, id_player).position).norm <= BALL_RADIUS + PLAYER_RADIUS
 
@@ -42,15 +45,15 @@ def getPlayersList(id_team, state):
 	return state.states[id_team]
 
 def getOthersPlayers(id_player, id_team, state):
-	return [ state.player_state( it , ip ) for ( it , ip ) in state.players if it != id_team or ip != id_player]	
+	return [ state.player_state( it , ip ) for ( it , ip ) in state.players if it != id_team ]	
 
 def isBallOwner(id_player, id_team, state):
-	posBall = state.ball.position + state.ball.vitesse
+	posBall = state.ball.position + state.ball.vitesse * 5
 	player = state.player_state(id_team, id_player)
 	distanceBallPlayer = (posBall - player.position).norm
 	playerList = getOthersPlayers(id_player, id_team, state)
 	for otherPlayer in playerList : 
-		if (posBall - (otherPlayer.position + otherPlayer.vitesse)).norm <= distanceBallPlayer:
+		if (posBall - (otherPlayer.position + otherPlayer.vitesse * 5)).norm <= distanceBallPlayer:
 			return False
 	return True
 	

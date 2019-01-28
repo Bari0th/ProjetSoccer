@@ -1,5 +1,6 @@
 from math import *
 from soccersimulator import *
+from mesOutils import *
 
 class StrategyFonceur(Strategy):
 	def _init_(self, name="Fonceur"):
@@ -11,7 +12,7 @@ class StrategyFonceur(Strategy):
 		acceleration = 1
 		
 		posPlayer = state.player_state(id_team, id_player).position
-		posBall = state.ball.position + state.ball.vitesse
+		posBall = state.ball.position + state.ball.vitesse * 10
 		
 		force = 3.5
 
@@ -31,7 +32,7 @@ class StrategyFonceurBis(Strategy):
 		
 		acceleration = 1
 		
-		posBall = state.ball.position + state.ball.vitesse
+		posBall = state.ball.position + state.ball.vitesse * 10
 		
 		force = 3.5
 
@@ -52,7 +53,7 @@ class StrategyGoal(Strategy):
 		if isBallOwner(id_player, id_team, state) :
 			goal = getOpponentGoal(id_team)
 			force = 10
-			posBall = state.ball.position + state.ball.vitesse
+			posBall = state.ball.position + state.ball.vitesse * 5
 			move = runThere( state.player_state(id_team, id_player), posBall)
 			shoot = Vector2D(0, 0)
 			if canShoot(state, id_team, id_player) :
