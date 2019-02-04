@@ -57,8 +57,7 @@ def isBallOwner(id_player, id_team, state):
 			return False
 	return True
 	
-def getBallDistanceArret(vitesse):
-	return
+
     
 	
 def getDistanceArret(vitesse):
