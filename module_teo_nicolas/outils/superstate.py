@@ -48,15 +48,15 @@ class SuperState(object):
         
     @property	
     def nearest_ally(self):
-        return min([(ally.position.distance(self.player_pos), ally) for ally in self.allies], key=elf.key)[1]
+        return min([(ally.position.distance(self.player_pos), ally) for ally in self.allies], key=self.key)[1]
         
     @property
     def nearest_player(self):
-        return min([(player.position.distance(self.player_pos), player) for player in self.players], key=elf.key)[1]
+        return min([(player.position.distance(self.player_pos), player) for player in self.players], key=self.key)[1]
 
     @property
     def nearest_ball_all_allies(self):
-        return min([(ally.position.distance(self.ball_pos), ally) for ally in self.all_allies], key=elf.key)[1]
+        return min([(ally.position.distance(self.ball_pos), ally) for ally in self.all_allies], key=self.key)[1]
 
     @property
     def nearest_ball_ally(self):
