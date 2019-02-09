@@ -1,6 +1,6 @@
 from math import *
 from soccersimulator import *
-from outils import *
+from .outils import *
 
 class StrategyFonceur(Strategy):
     def _init_(self, name="Fonceur"):
