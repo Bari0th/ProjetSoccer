@@ -19,9 +19,10 @@ class StrategyBehavior(metaclass=abc.ABCMeta):
         Redefine compute_acc and compute_shoot
         You don't have to care about if you can shoot or not
         """
-        self.name = "{} {}".format(moveAction.name, shootAction.name)
+        self.name = ""
         self.moveAction = moveAction
         self.shootAction = shootAction
+        self.updateName()
         
     def compute_acc(self, super_state):
         return self.moveAction.computeAction(super_state)
@@ -36,3 +37,14 @@ class StrategyBehavior(metaclass=abc.ABCMeta):
         if(super_state.can_shoot):
             return self.compute_shoot(super_state)
         return soc.SoccerAction()
+
+    def changeMoveAction(self, moveAction):
+        self.moveAction = moveAction
+        self.updateName()
+
+    def changeShootAction(self, action):
+        self.shootAction = action
+        self.updateName()
+
+    def updateName(self):
+        self.name = "{} {}".format(self.moveAction.name, self.shootAction.name)

@@ -104,15 +104,15 @@ class SuperState:
 		
     @property
     def allies(self):
-        return [self.state.player_state(it,ip) for (it,ip) in self.players if (it == self.it and ip != self.ip)]
+        return [self.state.player_state(it,ip) for (it,ip) in self.state.players if (it == self.it and ip != self.ip)]
 		
     @property
     def all_allies(self):
-        return [self.state.player_state(it,ip) for (it,ip) in self.players if it == self.it]
+        return [self.state.player_state(it,ip) for (it,ip) in self.state.players if it == self.it]
 		
     @property
     def opponents(self):
-        return [self.state.player_state(it,ip) for (it,ip) in self.players if it != self.it]
+        return [self.state.player_state(it,ip) for (it,ip) in self.state.players if it != self.it]
 
     @property
     def vect_play_ball(self):
