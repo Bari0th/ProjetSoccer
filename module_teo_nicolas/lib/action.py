@@ -16,7 +16,7 @@ class Shoot(Action):
 
 class RunToBall(Move):
 	def __init__(self):
-		Move.__init__(self, "RunToBall")
+		Move.__init__(self, "Ball")
 
 	def computeAction(self, superstate):
 		return soc.SoccerAction( acceleration = superstate.vect_play_ball)
@@ -44,3 +44,11 @@ class ShootToNearestAlly(Shoot):
 		Shoot.__init__(self, "ShootToNearestAlly")
 	def computeAction(self, superstate):
 		return soc.SoccerAction( shoot = (superstate.nearest_ally.position - superstate.player_pos).normalize() * 6)
+
+class ShootToNearestAllyFarFromOpponent(Shoot):
+	def __init__(self):
+		Shoot.__init__(self, "ShootToNear")
+	def computeAction(self, superstate):
+		shoot = (superstate.nearest_ally.position - superstate.player_pos).normalize() * 6
+		shoot.angle += (pi / 12 * copysign(1, shoot.angle - (superstate.nearest_opp.position - superstate.player_pos).angle))
+		return soc.SoccerAction( shoot = shoot )
