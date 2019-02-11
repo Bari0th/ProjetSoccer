@@ -124,7 +124,15 @@ class SuperState:
 
     @property
     def opp_goal(self):
-        return self.getTheOtherGoal.vector
+        return self.getTheOtherGoal.vector    
+        
+    @property	
+    def nearest_opp_goal_opp(self):
+        return min([(opp.position.distance(self.opp_goal), opp) for opp in self.opponents], key=self.key)[1]
+
+    @property
+    def is_opp_goal_nearer_than_opp(self):
+        return (self.player_pos.distance(self.opp_goal) - self.nearest_opp_goal_opp.distance(self.opp_goal)) > 0
 	
     @property
     def ally_goal(self):
