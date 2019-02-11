@@ -52,9 +52,14 @@ class SoccerTree:
         return retLists
 
     def GetTeams(self):
+        teams_dict = dict()
         teams = []
         for path in self.paths:
-            team = soc.SoccerTeam(getName(), path)
-            teams.append(team)
+            key_list = [x.strategy.name for x in path]
+            key_list.sort()
+            key = "".join(key_list)
+            if key not in teams_dict :
+                teams.append(soc.SoccerTeam(getName(), path))
+                teams_dict[key] = True
 
         return teams
