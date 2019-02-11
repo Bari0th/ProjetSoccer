@@ -1,4 +1,5 @@
 import soccersimulator as soc
+import math
 
 class MyVector2D:
     @staticmethod
@@ -7,32 +8,33 @@ class MyVector2D:
         vec.normalize()
         return vec
 
-class GameState:
+class SuperState:
     def __init__(self, state, id_team, id_player):
         self.state = state
-        self.id_team = id_team
-        self.id_player = id_player
-    
-    def canShoot(self):
+        self.it = id_team
+        self.ip = id_player
+        self.key = lambda r: r[0]
+
+    @property
+    def can_shoot(self):
         """
         Returns true only if the player is within the range of the ball
         """
-        distance = self.ball.position.distance(self.player.position)
-        return distance <= soc.settings.PLAYER_RADIUS + soc.settings.BALL_RADIUS
+        return self.dist_play_ball <= soc.settings.PLAYER_RADIUS + soc.settings.BALL_RADIUS
 
     @property
     def getMyGoal(self):
         """
         Returns a GoalData
         """
-        return self.terrainData.getMyGoal(self.id_team)
+        return self.terrainData.getMyGoal(self.it)
 
     @property
     def getTheOtherGoal(self):
         """
         Returns a GoalData
         """
-        return self.terrainData.getTheOtherGoal(self.id_team)
+        return self.terrainData.getTheOtherGoal(self.it)
 
     @property
     def ball(self):
@@ -40,13 +42,129 @@ class GameState:
         Returns a MobileMixin
         """
         return self.state.ball
+        
+    @property
+    def ball_pos(self):
+        return self.ball.position
+
+    @property
+    def ball_vit(self):
+        return self.ball.vitesse
+
+    @staticmethod
+    def nearest_player(pos, player_list):
+        return min([(player.position.distance(pos), player) for player in player_list])[1]
 
     @property
     def player(self):
         """
         Returns a MobileMixin
         """
-        return self.state.player_state(self.id_team, self.id_player)
+        return self.state.player_state(self.it, self.ip)
+
+    @property	
+    def player_pos(self):
+        return self.state.player_state(self.it,self.ip).position
+	
+    @property	
+    def player_vit(self):
+        return self.state.player_state(self.it,self.ip).vitesse
+
+    @property	
+    def nearest_opp(self):
+        return min([(opp.position.distance(self.player_pos), opp) for opp in self.opponents], key=self.key)[1]
+		
+    @property	
+    def nearest_ally(self):
+        return min([(ally.position.distance(self.player_pos), ally) for ally in self.allies], key=self.key)[1]
+		
+    @property
+    def nearest_player(self):
+        return min([(player.position.distance(self.player_pos), player) for player in self.players], key=self.key)[1]
+
+    @property
+    def nearest_ball_all_allies(self):
+        return min([(ally.position.distance(self.ball_pos), ally) for ally in self.all_allies], key=self.key)[1]
+
+    @property
+    def nearest_ball_ally(self):
+        return min([(ally.position.distance(self.ball_pos), ally) for ally in self.allies], key=self.key)[1]
+	
+    @property	
+    def nearest_ball_opp(self):
+        return min([(opp.position.distance(self.ball_pos), opp) for opp in self.opponents], key=self.key)[1]
+		
+    @property
+    def nearest_ball_player(self):
+        return min([(player.position.distance(self.ball_pos), player) for player in self.players], key=self.key)[1]
+		
+    @property
+    def players(self):
+        return [self.state.player_state(it,ip) for (it,ip) in self.state.players]
+		
+    @property
+    def allies(self):
+        return [self.state.player_state(it,ip) for (it,ip) in self.players if (it == self.it and ip != self.ip)]
+		
+    @property
+    def all_allies(self):
+        return [self.state.player_state(it,ip) for (it,ip) in self.players if it == self.it]
+		
+    @property
+    def opponents(self):
+        return [self.state.player_state(it,ip) for (it,ip) in self.players if it != self.it]
+
+    @property
+    def vect_play_ball(self):
+        return self.ball_pos - self.player_pos
+
+    @property
+    def dist_play_ball(self):
+        return self.vect_play_ball.norm
+
+    @property
+    def opp_goal(self):
+        return self.getTheOtherGoal.vector
+	
+    @property
+    def ally_goal(self):
+        return self.getMyGoal.vector
+
+    @property
+    def is_ball_nearest(self):
+        return self.player == self.nearest_ball_player
+
+    @property
+    def coeff_distance(self):
+        if self.dist_play_ball > 40 : 
+            return 1
+        return self.dist_play_ball / 40
+
+    @property
+    def ally_goal_top(self):
+        return self.getMyGoal.top
+
+    @property
+    def ally_goal_bot(self):
+        return self.getMyGoal.bottom
+
+    @property
+    def opp_goal_top(self):
+        return self.getTheOtherGoal.top
+
+    @property
+    def opp_goal_bot(self):
+        return self.getTheOtherGoal.bottom
+
+    @property
+    def defensive_pos(self):
+        return soc.Vector2D(norm = ((self.ally_goal - self.ball_pos).x / 2. ) / math.cos(self.angle_median_ally_goal(self.ball_pos)), angle = self.angle_median_ally_goal(self.ball_pos))
+
+    def angle_median_ally_goal(self, pos):
+        return (((self.ally_goal_top - pos).angle + (self.ally_goal_bot - pos).angle) / 2) % (2 * math.pi)
+
+    def angle_median_opp_goal(self, pos):
+        return (((self.opp_goal_top - pos).angle + (self.opp_goal_bot - pos).angle ) / 2) % (2 * math.pi)
 
     @property
     def terrainData(self):
@@ -58,18 +176,19 @@ class GoalData:
     """
     def __init__(self, team_id):
         assert team_id in [1,2]
-        if team_id == 1 :
-            self.x_range = soc.Vector2D(0,0)
-            self.middle = soc.Vector2D(0, soc.settings.GAME_HEIGHT/2)
-        else :
-            self.x_range = soc.Vector2D(soc.settings.GAME_WIDTH, soc.settings.GAME_WIDTH)
-            self.middle = soc.Vector2D(soc.settings.GAME_WIDTH, soc.settings.GAME_HEIGHT/2)
-
-        self.y_range = (soc.Vector2D(-1, 1) * soc.settings.GAME_GOAL_HEIGHT + soc.Vector2D(1, 1) * soc.settings.GAME_HEIGHT) / 2
-        self.height = soc.settings.GAME_GOAL_HEIGHT
+        self.vector = soc.Vector2D(soc.settings.GAME_WIDTH * (team_id - 1), soc.settings.GAME_HEIGHT / 2)
 
     def __repr__(self):
-        return "min : {} max : {} middle : {}".format(self.x_range, self.y_range, self.middle)
+        return self.vector
+
+    @property
+    def top(self):
+        return self.vector + soc.Vector2D(0, soc.settings.GAME_GOAL_HEIGHT/2)
+
+    @property
+    def bottom(self):
+        return self.vector - soc.Vector2D(0, soc.settings.GAME_GOAL_HEIGHT/2)
+        
 class TerrainData:
 
     terrain = None

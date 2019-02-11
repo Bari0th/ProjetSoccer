@@ -8,10 +8,10 @@ class SimpleStrategy(soc.Strategy):
         self.behavior = strategyBehavior
 
     def compute_strategy(self, state, id_team, id_player):
-        game_state = ut.GameState(state, id_team, id_player)
-        acc = self.behavior.get_acc(game_state)
-        shoot = self.behavior.get_shoot(game_state)
-        return soc.SoccerAction(acc, shoot)
+        super_state = ut.SuperState(state,id_team,id_player)
+        acc = self.behavior.get_acc(super_state)
+        shoot = self.behavior.get_shoot(super_state)
+        return acc + shoot
 
 class StrategyBehavior(metaclass=abc.ABCMeta):
     def __init__(self, name):
@@ -21,16 +21,16 @@ class StrategyBehavior(metaclass=abc.ABCMeta):
         """
         self.name = name
     @abc.abstractmethod
-    def compute_acc(self, game_state):
+    def compute_acc(self, super_state):
         pass
     @abc.abstractmethod
-    def compute_shoot(self, game_state):
+    def compute_shoot(self, super_state):
         pass
 
-    def get_acc(self, game_state):
-        return self.compute_acc(game_state)
+    def get_acc(self, super_state):
+        return self.compute_acc(super_state)
 
-    def get_shoot(self, game_state):
-        if(game_state.canShoot()):
-            return self.compute_shoot(game_state)
-        return soc.Vector2D()
+    def get_shoot(self, super_state):
+        if(super_state.can_shoot):
+            return self.compute_shoot(super_state)
+        return soc.SoccerAction()

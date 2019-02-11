@@ -1,7 +1,7 @@
 """
 We only define compute_strategy here and ways to create strategies from them
 """
-import lib.adpater as ad
+import lib.action as act
 from lib import strategy_encapsulator as strat
 from lib import soccertools as ut
 import soccersimulator as soc
@@ -17,70 +17,30 @@ def createStrategies(behaviors):
     return strats
 
 class FonceurBehavior(strat.StrategyBehavior):
-        def __init__(self):
+    def __init__(self):
             strat.StrategyBehavior.__init__(self, "Fonceur")
+    
+    def compute_acc(self, super_state):
+        move = act.Move(super_state)
+        return move.run_to_predict_ball
 
-        def compute_acc(self, game_state):
-            ball = game_state.ball
-            player = game_state.player
+    def compute_shoot(self, super_state):
+        shoot = act.Shoot(super_state)
+        return shoot.shoot_to_goal
 
-            direction = ut.MyVector2D.getDirection(player.position, ball.position)
-
-            return direction * soc.settings.maxPlayerAcceleration
-
-        def compute_shoot(self, game_state):
-            ball = game_state.ball
-            directionToGoal = ut.MyVector2D.getDirection(ball.position, game_state.getTheOtherGoal.middle)
-            return directionToGoal * 5
-
-class GoalBehaviorBallOwner(strat.StrategyBehavior):
-    def __init__(self):
-        strat.StrategyBehavior.__init__(self, "Goal")
-
-    def compute_acc(self, game_state):
-        posBall = game_state.ball.position + game_state.ball.vitesse * 5
-        return ad.runThere( game_state.player, posBall)
-
-    def compute_shoot(self, game_state):
-        force = 10
-        return ad.calculShoot(game_state, force)
-
-class GoalBehaviorNotBallOwner(strat.StrategyBehavior):
-    def __init__(self):
-        strat.StrategyBehavior.__init__(self, "Goal")
-
-    def compute_acc(self, game_state):
-        ourGoal = ad.getOurGoal(game_state)
-        posBall = game_state.ball.position
         
-        goalTop = ourGoal + soc.Vector2D(0,soc.settings.GAME_GOAL_HEIGHT/2.)
-        goalBot = ourGoal - soc.Vector2D(0,soc.settings.GAME_GOAL_HEIGHT/2.)
-        
-        ballToGoalTop = goalTop - posBall
-        ballToGoalBot = goalBot - posBall
-        angle = (ballToGoalTop.angle + ballToGoalBot.angle)/2.
-        vect = soc.Vector2D(norm = 1./math.cos(angle)*ballToGoalBot.x/2., angle = angle)
-        
-        move = ad.goThere(game_state.player, vect+posBall)
-        return move
-    def compute_shoot(self, game_state):
-        return soc.Vector2D(0,0)
-
-
 class GoalBehavior(strat.StrategyBehavior):
     def __init__(self):
-        strat.StrategyBehavior.__init__(self, "Goal")
-        self.ballOwner = GoalBehaviorBallOwner()
-        self.notBallOwner = GoalBehaviorNotBallOwner()
+            strat.StrategyBehavior.__init__(self, "Goal")
 
-    def compute_acc(self, game_state):
-        if ad.isBallOwner(game_state):
-            return self.ballOwner.compute_acc(game_state)
+    def compute_acc(self, super_state):
+        move = act.Move(super_state)
+        if super_state.is_ball_nearest :
+            return move.run_to_predict_ball
+        return move.run_to_defensive_pos
 
-        return self.notBallOwner.compute_acc(game_state)
-
-    def compute_shoot(self, game_state):
-        if ad.isBallOwner(game_state):
-            return self.ballOwner.compute_shoot(game_state)
-
-        return self.notBallOwner.compute_shoot(game_state)
+    def compute_shoot(self, super_state):
+        shoot = act.Shoot(super_state)
+        if super_state.is_ball_nearest :
+            return shoot.shoot_to_goal
+        return shoot.shoot_to_nearest_ally
