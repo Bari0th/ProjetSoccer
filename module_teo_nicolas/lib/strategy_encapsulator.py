@@ -9,20 +9,20 @@ class SimpleStrategy(soc.Strategy):
 
     def compute_strategy(self, state, id_team, id_player):
         super_state = ut.SuperState(state,id_team,id_player)
+        self.behavior.updateActions(super_state)
         acc = self.behavior.get_acc(super_state)
         shoot = self.behavior.get_shoot(super_state)
         return acc + shoot
 
 class StrategyBehavior(metaclass=abc.ABCMeta):
-    def __init__(self, moveAction, shootAction):
+    def __init__(self, name, moveAction, shootAction):
         """
         Redefine compute_acc and compute_shoot
         You don't have to care about if you can shoot or not
         """
-        self.name = ""
+        self.name = name
         self.moveAction = moveAction
         self.shootAction = shootAction
-        self.updateName()
         
     def compute_acc(self, super_state):
         return self.moveAction.computeAction(super_state)
@@ -40,11 +40,9 @@ class StrategyBehavior(metaclass=abc.ABCMeta):
 
     def changeMoveAction(self, moveAction):
         self.moveAction = moveAction
-        self.updateName()
 
     def changeShootAction(self, action):
         self.shootAction = action
-        self.updateName()
 
-    def updateName(self):
-        self.name = "{} {}".format(self.moveAction.name, self.shootAction.name)
+    def updateActions(self, super_state):
+        pass
