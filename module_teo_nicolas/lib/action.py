@@ -47,7 +47,7 @@ class ShootToNearestAlly(Shoot):
 
 class ShootToNearestAllyFarFromOpponent(Shoot):
 	def __init__(self):
-		Shoot.__init__(self, "ShootToNear")
+		Shoot.__init__(self, "ShootAllyFarOpp")
 	def computeAction(self, superstate):
 		shoot = (superstate.nearest_ally.position - superstate.player_pos).normalize() * 6
 		shoot.angle += (pi / 12 * copysign(1, shoot.angle - (superstate.nearest_opp.position - superstate.player_pos).angle))
