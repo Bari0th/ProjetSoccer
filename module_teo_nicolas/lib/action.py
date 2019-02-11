@@ -62,11 +62,11 @@ class ShootToNearestAllyFarFromOpponent(Shoot):
 		shoot.angle += (math.pi / 12 * math.copysign(1, shoot.angle - (superstate.nearest_opp.position - superstate.player_pos).angle))
 		return soc.SoccerAction( shoot = shoot )
 
-class ShootToMove(Shoot):
+class ShootToMoveToGoal(Shoot):
 	def __init__(self):
 		Shoot.__init__(self, "ShootToMove")
 	def computeAction(self,superstate):
-		return soc.SoccerAction(shoot = (superstate.player_vit.normalize() * 0.5))
+		return soc.SoccerAction(shoot = ((superstate.opp_goal - superstate.player_pos).normalize() * 0.5))
 	
 class StrongShootToGoal(Shoot):
 	def __init__(self):

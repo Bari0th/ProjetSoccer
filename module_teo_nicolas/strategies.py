@@ -30,8 +30,10 @@ class GoalBehavior(strat.StrategyBehavior):
             self.changeMoveAction(act.RunToPredictBall())
             if ((super_state.opp_goal - super_state.player_pos).angle - (super_state.nearest_ally.position - super_state.player_pos).angle) < math.pi/4:
                 self.changeShootAction(act.ShootToNearestAllyFarFromOpponent())
+            elif ((super_state.player_pos - super_state.opp_goal).norm < 30) and not(super_state.is_opp_goal_nearer_than_opp):
+                self.changeShootAction(act.StrongShootToGoal())
             else :
-                self.changeShootAction(act.ShootToGoal())
+                self.changeShootAction(act.ShootToMoveToGoal())
 
         else :
             self.changeMoveAction(act.RunToDefensivePos())
