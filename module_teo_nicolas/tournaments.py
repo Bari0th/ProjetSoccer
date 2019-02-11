@@ -50,8 +50,8 @@ class Tournaments:
 
 if __name__ == "__main__":
     behaviorClasses = [strat.FonceurBehavior, strat.GoalBehavior]
-    tournament = Tournaments(behaviorClasses, 2, 500)
+    tournament = Tournaments(behaviorClasses, 2, 800)
     tournament.playTournament()
-    #tournament.Show()
+    tournament.Show()
     tournament.printScores()
 

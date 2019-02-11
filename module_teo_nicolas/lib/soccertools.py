@@ -132,7 +132,7 @@ class SuperState:
 
     @property
     def is_opp_goal_nearer_than_opp(self):
-        return (self.player_pos.distance(self.opp_goal) - self.nearest_opp_goal_opp.distance(self.opp_goal)) > 0
+        return (self.player_pos.distance(self.opp_goal) - self.nearest_opp_goal_opp.position.distance(self.opp_goal)) > 0
 	
     @property
     def ally_goal(self):

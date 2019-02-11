@@ -66,11 +66,13 @@ class ShootToMoveToGoal(Shoot):
 	def __init__(self):
 		Shoot.__init__(self, "ShootToMove")
 	def computeAction(self,superstate):
-		return soc.SoccerAction(shoot = ((superstate.opp_goal - superstate.player_pos).normalize() * 0.5))
+		return soc.SoccerAction(shoot = ((superstate.opp_goal - superstate.player_pos).normalize() * 1))
 	
 class StrongShootToGoal(Shoot):
 	def __init__(self):
 		Shoot.__init__(self, "StrongShootToGoal")
 	def computeAction(self,superstate):
-		return soc.SoccerAction(shoot = ((superstate.opp_goal - superstate.player_pos).normalize() *\
-		 (((40 - (superstate.player_pos - superstate.ball_pos).norm)/20 * 3) if (superstate.player_pos.distance(superstate.ball_pos) < 20) else 3)
+		if (superstate.player_pos.distance(superstate.ball_pos) < 20):
+			coeff = (40 - (superstate.player_pos - superstate.ball_pos).norm)/20 * 3
+		else : coeff = 3
+		return soc.SoccerAction(shoot = ((superstate.opp_goal - superstate.player_pos).normalize() * coeff))

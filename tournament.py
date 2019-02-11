@@ -1,6 +1,6 @@
 from soccersimulator import SoccerTeam
-from module_teo_nicolas import action
-from module_teo_nicolas import strategy_encapsulator
+from module_teo_nicolas import lib.action
+from module_teo_nicolas import lib.strategy_encapsulator
 
 def get_team ( nb_players ):
 	team = SoccerTeam ( name = " Nicolas / Téo ")
