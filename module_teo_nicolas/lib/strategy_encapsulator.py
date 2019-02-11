@@ -14,15 +14,15 @@ class SimpleStrategy(soc.Strategy):
         return acc + shoot
 
 class StrategyBehavior(metaclass=abc.ABCMeta):
-    def __init__(self, name):
+    def __init__(self, moveAction, shootAction):
         """
         Redefine compute_acc and compute_shoot
         You don't have to care about if you can shoot or not
         """
-        self.name = name
+        self.name = "{} {}".format(moveAction.name, shootAction.name)
     @abc.abstractmethod
     def compute_acc(self, super_state):
-        pass
+        
     @abc.abstractmethod
     def compute_shoot(self, super_state):
         pass
