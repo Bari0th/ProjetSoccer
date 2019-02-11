@@ -18,29 +18,9 @@ def createStrategies(behaviors):
 
 class FonceurBehavior(strat.StrategyBehavior):
     def __init__(self):
-            strat.StrategyBehavior.__init__(self, "Fonceur")
-    
-    def compute_acc(self, super_state):
-        move = act.Move(super_state)
-        return move.run_to_predict_ball
-
-    def compute_shoot(self, super_state):
-        shoot = act.Shoot(super_state)
-        return shoot.shoot_to_goal
+            strat.StrategyBehavior.__init__(self, act.RunToPredictBall(), act.ShootToGoal())
 
         
 class GoalBehavior(strat.StrategyBehavior):
     def __init__(self):
-            strat.StrategyBehavior.__init__(self, "Goal")
-
-    def compute_acc(self, super_state):
-        move = act.Move(super_state)
-        if super_state.is_ball_nearest :
-            return move.run_to_predict_ball
-        return move.run_to_defensive_pos
-
-    def compute_shoot(self, super_state):
-        shoot = act.Shoot(super_state)
-        if super_state.is_ball_nearest :
-            return shoot.shoot_to_goal
-        return shoot.shoot_to_nearest_ally
+            strat.StrategyBehavior.__init__(self, act.RunToDefensivePos(), act.ShootToNearestAlly())

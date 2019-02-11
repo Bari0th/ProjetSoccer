@@ -20,12 +20,14 @@ class StrategyBehavior(metaclass=abc.ABCMeta):
         You don't have to care about if you can shoot or not
         """
         self.name = "{} {}".format(moveAction.name, shootAction.name)
-    @abc.abstractmethod
-    def compute_acc(self, super_state):
+        self.moveAction = moveAction
+        self.shootAction = shootAction
         
-    @abc.abstractmethod
+    def compute_acc(self, super_state):
+        return self.moveAction.computeAction(super_state)
+        
     def compute_shoot(self, super_state):
-        pass
+        return self.shootAction.computeAction(super_state)
 
     def get_acc(self, super_state):
         return self.compute_acc(super_state)
