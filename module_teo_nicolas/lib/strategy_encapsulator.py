@@ -1,6 +1,6 @@
 import abc
 import soccersimulator as soc
-from lib import soccertools as ut
+from . import soccertools as ut
 
 class SimpleStrategy(soc.Strategy):
     def __init__(self, strategyBehavior):

@@ -1,24 +1,24 @@
-from soccersimulator import SoccerTeam
-from module_teo_nicolas import lib.action
-from module_teo_nicolas import lib.strategy_encapsulator
+from module_teo_nicolas import strategies as strat
+import soccersimulator as soc
+
 
 def get_team ( nb_players ):
 	team = SoccerTeam ( name = " Nicolas / Téo ")
 	if nb_players == 1:
-		team.add ( " goal " , SimpleStrategy(GoalBehavior()))
+		team.add ( " goal " , strat.createStrategy(strat.GoalBehavior()))
 	if nb_players == 2:
-		team.add ( " fonceur bis" , SimpleStrategy(FonceurBehavior()))
-		team.add ( " gaul " , SimpleStrategy(GoalBehavior()))
+		team.add ( " fonceur bis" , strat.createStrategy(strat.FonceurBehavior()))
+		team.add ( " gaul " , strat.createStrategy(strat.GoalBehavior()))
 	return team
 
 if __name__ == '__main__':
 	team1 = get_team(1)
-	team2 = SoccerTeam("equipe 1", [Player("FonceurBis", FonceurBehavior())])
-	match = Simulation(team1, team2, 2000)
+	team2 = soc.SoccerTeam("equipe 1", [soc.Player("FonceurBis", strat.createStrategy(strat.FonceurBehavior()))])
+	match = soc.Simulation(team1, team2, 2000)
 	match.start()
-	show_simu(match)
+	soc.show_simu(match)
 	team1 = get_team(2)
-	team2 = SoccerTeam("equipe 1", [Player("Fonceur", FonceurBehavior()), Player("FonceurBis", FonceurBehavior())])
-	match = Simulation(team1, team2, 2000)
+	team2 = soc.SoccerTeam("equipe 1", [soc.Player("Fonceur", strat.createStrategy(strat.FonceurBehavior())), soc.Player("FonceurBis", strat.createStrategy(strat.FonceurBehavior()))])
+	match = soc.Simulation(team1, team2, 2000)
 	match.start()
-	show_simu(match)
+	soc.show_simu(match)
