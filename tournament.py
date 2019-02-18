@@ -3,7 +3,7 @@ import soccersimulator as soc
 
 
 def get_team ( nb_players ):
-	team = SoccerTeam ( name = " Nicolas / Téo ")
+	team = soc.SoccerTeam ( name = " Nicolas / Téo ")
 	if nb_players == 1:
 		team.add ( " goal " , strat.createStrategy(strat.GoalBehavior()))
 	if nb_players == 2:
