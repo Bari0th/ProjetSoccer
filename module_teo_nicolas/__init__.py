@@ -7,5 +7,5 @@ def get_team ( nb_players ):
 		team.add ( " Goal " , strat.createStrategy(strat.GoalBehaviorAlone()))
 	if nb_players == 2:
 		team.add ( " Attaquant " , strat.createStrategy(strat.AttaquantBehavior()))
-		team.add ( " Gaul " , strat.createStrategy(strat.GoalBehaviorTeam()))
+		team.add ( " Goal " , strat.createStrategy(strat.GoalBehaviorTeam()))
 	return team

@@ -168,7 +168,7 @@ class SuperState:
 
     @property
     def defensive_pos(self):
-        return soc.Vector2D(norm = ((self.ally_goal - self.ball_pos).x / 2. ) / math.cos(self.angle_median_ally_goal(self.ball_pos)), angle = self.angle_median_ally_goal(self.ball_pos))
+        return soc.Vector2D(norm = ((self.ally_goal - self.ball_pos).x / 4. ) / math.cos(self.angle_median_ally_goal(self.ball_pos)), angle = self.angle_median_ally_goal(self.ball_pos))
 
     def angle_median_ally_goal(self, pos):
         return (((self.ally_goal_top - pos).angle + (self.ally_goal_bot - pos).angle) / 2) % (2 * math.pi)
