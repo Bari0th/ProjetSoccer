@@ -185,20 +185,24 @@ class SuperState:
         return (len(self.allies) > 0)
 
     @property
-    def top_ally_corner(self):
-        return soc.Vector2D(0,(self.it - 1) * 150)
+    def bot_ally_corner(self):
+        return soc.Vector2D((self.it - 1) * 150,90)
 
     @property
-    def bot_ally_corner(self):
-        return soc.Vector2D(90,(self.it - 1) * 150)
+    def top_ally_corner(self):
+        return soc.Vector2D((self.it - 1) * 150, 0)
 
     @property
     def top_opp_corner(self):
-        return soc.Vector2D(0,(self.it % 2) * 150)
+        return soc.Vector2D((self.it % 2) * 150,90)
 
     @property
     def bot_opp_corner(self):
-        return soc.Vector2D(90,(self.it % 2) * 150)
+        return soc.Vector2D((self.it % 2) * 150, 0)
+
+    @property
+    def ball_in_corner(self):
+        return min([self.ball_pos.distance(corner_pos) for corner_pos in [self.top_ally_corner, self.bot_ally_corner]]) < 20
 
 
         

@@ -57,7 +57,10 @@ class GoalBehaviorAlone(strat.StrategyBehavior):
             strat.StrategyBehavior.__init__(self, "Goal", act.RunToDefensivePos(), act.ShootToCornerFarFromOpp())
 
     def updateActions(self, super_state):
-        if super_state.is_ball_nearest :
+        if super_state.ball_in_corner:
+            self.changeMoveAction(act.RunToDefensivePos())
+            self.changeShootAction(act.ShootToCornerFarFromOpp())
+        elif super_state.is_ball_nearest :
             self.changeMoveAction(act.RunToPredictBall())
             if not(super_state.is_opp_goal_nearer_than_opp) :
                 self.changeShootAction(act.ShootToMoveToGoal())
