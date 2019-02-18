@@ -142,7 +142,7 @@ class SuperState:
 
     @property
     def is_ball_nearest(self):
-        return self.player == self.nearest_ball_player
+        return (self.player_pos.distance(self.ball_pos) + 0.5 < self.nearest_ball_opp.position.distance(self.ball_pos)) and (self.player_pos.distance(self.ball_pos) <= self.nearest_ball_all_allies.position.distance(self.ball_pos) )
 
     @property
     def coeff_distance(self):
@@ -183,6 +183,24 @@ class SuperState:
     @property
     def has_an_ally(self):
         return (len(self.allies) > 0)
+
+    @property
+    def top_ally_corner(self):
+        return soc.Vector2D(0,(self.it - 1) * 150)
+
+    @property
+    def bot_ally_corner(self):
+        return soc.Vector2D(90,(self.it - 1) * 150)
+
+    @property
+    def top_opp_corner(self):
+        return soc.Vector2D(0,(self.it % 2) * 150)
+
+    @property
+    def bot_opp_corner(self):
+        return soc.Vector2D(90,(self.it % 2) * 150)
+
+
         
 class GoalData:
     """

@@ -59,7 +59,7 @@ class ShootToMoveToGoal(Shoot):
 	def __init__(self):
 		Shoot.__init__(self, "ShootToMove")
 	def computeAction(self,superstate):
-		return soc.SoccerAction(shoot = ((superstate.opp_goal - superstate.player_pos).normalize() * 1.5))
+		return soc.SoccerAction(shoot = (superstate.opp_goal - superstate.player_pos).normalize() * 1.5)
 	
 class StrongShootToGoal(Shoot):
 	def __init__(self):
@@ -69,3 +69,15 @@ class StrongShootToGoal(Shoot):
 			coeff = (40 - (superstate.player_pos - superstate.ball_pos).norm)/20 * 3
 		else : coeff = 3
 		return soc.SoccerAction(shoot = ((superstate.opp_goal - superstate.player_pos).normalize() * coeff))
+
+
+	
+class ShootToCornerFarFromOpp(Shoot):
+	def __init__(self):
+		Shoot.__init__(self, "ShootToCorner")
+	def computeAction(self,superstate):
+		if superstate.top_ally_corner.distance(superstate.nearest_opp.position) > superstate.bot_ally_corner.distance(superstate.nearest_opp.position) :
+			shoot = 6
+		else :
+			shoot = -6
+		return soc.SoccerAction( shoot = soc.Vector2D(1, shoot))
