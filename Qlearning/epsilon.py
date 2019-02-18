@@ -22,7 +22,8 @@ class EpsilonGreedy:
             return self.ind_max(self.values)
         return random.randrange(len(self.values))
 
-    def update(self, chosen_arm, reward):
+    def update(self, reward):
+        chosen_arm = self.select_arm()
         self.counts[chosen_arm] += 1
         n = self.counts[chosen_arm]
 
@@ -33,3 +34,5 @@ class EpsilonGreedy:
 
 if __name__ == "__main__":
     algo = EpsilonGreedy(0.2, 4)
+    for i in range(50):
+        algo.update(0.5 * i * (i%2 * - 1))
