@@ -179,6 +179,10 @@ class SuperState:
     @property
     def terrainData(self):
         return TerrainData.getInstance()
+
+    @property
+    def has_an_ally(self):
+        return (len(self.allies) > 0)
         
 class GoalData:
     """
