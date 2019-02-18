@@ -1,11 +1,14 @@
 """
 We only define compute_strategy here and ways to create strategies from them
 """
-from .lib import action as act
-from .lib import strategy_encapsulator as strat
-from .lib import soccertools as ut
-import soccersimulator as soc
 import math
+
+import soccersimulator as soc
+
+from .lib import action as act
+from .lib import soccertools as ut
+from .lib import strategy_encapsulator as strat
+
 
 def createStrategy(behavior):
     return strat.SimpleStrategy(behavior)

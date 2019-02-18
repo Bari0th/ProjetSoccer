@@ -1,5 +1,5 @@
-import strategies as strat
-import tournaments as trn
+from . import strategies as strat
+from . import tournaments as trn
 
 if __name__ == "__main__":
     behaviorClasses = [strat.FonceurBehavior, strat.GoalBehavior]

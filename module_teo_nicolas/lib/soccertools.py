@@ -1,5 +1,7 @@
-import soccersimulator as soc
 import math
+
+import soccersimulator as soc
+
 
 class MyVector2D:
     @staticmethod
