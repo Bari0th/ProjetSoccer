@@ -76,8 +76,5 @@ class ShootToCornerFarFromOpp(Shoot):
 	def __init__(self):
 		Shoot.__init__(self, "ShootToCorner")
 	def computeAction(self,superstate):
-		if superstate.top_ally_corner.distance(superstate.nearest_opp.position) > superstate.bot_ally_corner.distance(superstate.nearest_opp.position) :
-			shoot = (superstate.top_ally_corner - superstate.player_pos).normalize() * 4
-		else :
-			shoot = (superstate.bot_ally_corner - superstate.player_pos).normalize() * 4
+		shoot = (superstate.ally_corner_far_opp_near_player - superstate.player_pos).normalize() * 4
 		return soc.SoccerAction( shoot = shoot)

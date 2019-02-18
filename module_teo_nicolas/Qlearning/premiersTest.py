@@ -38,4 +38,4 @@ class q_state(object):
     def opp_qfood(self):
         return self.position_to_qfood(self.nearest_opp.position)
     
-    def get_
+    @property

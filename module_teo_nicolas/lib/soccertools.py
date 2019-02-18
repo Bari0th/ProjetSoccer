@@ -204,6 +204,13 @@ class SuperState:
     def ball_in_corner(self):
         return min([self.ball_pos.distance(corner_pos) for corner_pos in [self.top_ally_corner, self.bot_ally_corner]]) < 15
 
+    @property
+    def ally_corner_far_opp_near_player(self):
+        corner = self.top_ally_corner
+        if self.player_pos.distance(corner) > self.nearest_opp.position.distance(corner):
+            return self.bot_ally_corner
+        else : return corner
+
 
         
 class GoalData:
