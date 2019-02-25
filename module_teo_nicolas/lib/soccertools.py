@@ -206,7 +206,7 @@ class SuperState:
 
     @property
     def ball_in_corner(self):
-        return min([self.ball_pos.distance(corner_pos) for corner_pos in [self.top_ally_corner, self.bot_ally_corner]]) < 18
+        return (abs(self.ball_pos.x - self.top_ally_corner.x) < 10 and abs(self.ball_pos.y - self.top_ally_corner.y) < 20) or (abs(self.ball_pos.x - self.bot_ally_corner.x) < 10 and abs(self.ball_pos.y - self.bot_ally_corner.y) < 20)
 
     @property
     def ally_corner_far_opp_near_player(self):
