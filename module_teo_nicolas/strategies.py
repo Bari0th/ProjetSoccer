@@ -68,8 +68,4 @@ class GoalBehaviorAlone(strat.StrategyBehavior):
                 self.changeShootAction(act.ShootToCornerFarFromOpp())
         else :
             self.changeMoveAction(act.RunToDefensivePos())
-<<<<<<< HEAD
             self.changeShootAction(act.ShootToCornerFarFromOpp())
-=======
-            self.changeShootAction(act.ShootToGoal())
->>>>>>> seance5
