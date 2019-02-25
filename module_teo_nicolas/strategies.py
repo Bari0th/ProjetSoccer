@@ -21,7 +21,7 @@ def createStrategies(behaviors):
 
 class FonceurBehavior(strat.StrategyBehavior):
     def __init__(self):
-            strat.StrategyBehavior.__init__(self, "Fonceur", act.RunToPredictBall(), act.StrongShootToGoal())
+            strat.StrategyBehavior.__init__(self, "Fonceur", act.RunToBall(), act.StrongShootToGoal())
 
 class AttaquantBehavior(strat.StrategyBehavior):
     def __init__(self):
@@ -48,7 +48,9 @@ class GoalBehaviorTeam(strat.StrategyBehavior):
                 self.changeShootAction(act.ShootToMoveToGoal())
 
         else :
-            self.changeMoveAction(act.RunToDefensivePos())
+            if super_state.is_ball_near_our_goal :
+                self.changeMoveAction(act.RunToCloseDefensivePos())
+            else :self.changeMoveAction(act.RunToDefensivePos())
             self.changeShootAction(act.ShootToGoal())   
 
 
@@ -67,5 +69,7 @@ class GoalBehaviorAlone(strat.StrategyBehavior):
             else : 
                 self.changeShootAction(act.ShootToCornerFarFromOpp())
         else :
-            self.changeMoveAction(act.RunToDefensivePos())
             self.changeShootAction(act.ShootToCornerFarFromOpp())
+            if super_state.is_ball_near_our_goal :
+                self.changeMoveAction(act.RunToCloseDefensivePos())
+            else :self.changeMoveAction(act.RunToDefensivePos())

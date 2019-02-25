@@ -26,13 +26,19 @@ class RunToPredictBall(Move):
 	def __init__(self):
 		Move.__init__(self, "RunToPredictBall")
 	def computeAction(self, superstate):
-		return soc.SoccerAction( acceleration = (superstate.vect_play_ball + superstate.ball_vit * 5 * superstate.coeff_distance) )
+		return soc.SoccerAction( acceleration = (superstate.vect_play_ball + superstate.ball_vit * 20 * superstate.coeff_distance) )
 
 class RunToDefensivePos(Move):
 	def __init__(self):
 		Move.__init__(self, "RunToDefensivePos")
 	def computeAction(self, superstate):
 		return soc.SoccerAction(acceleration = (superstate.defensive_pos + superstate.ball_pos - superstate.player_pos))
+
+class RunToCloseDefensivePos(Move):
+	def __init__(self):
+		Move.__init__(self, "RunToDefensivePos")
+	def computeAction(self, superstate):
+		return soc.SoccerAction(acceleration = (superstate.close_defensive_pos + superstate.ball_pos - superstate.player_pos))
 
 class ShootToGoal(Shoot):
 	def __init__(self):

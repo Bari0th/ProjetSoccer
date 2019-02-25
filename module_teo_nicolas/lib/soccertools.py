@@ -168,6 +168,10 @@ class SuperState:
 
     @property
     def defensive_pos(self):
+        return soc.Vector2D(norm = ((self.ally_goal - self.ball_pos).x / 1.5 ) / math.cos(self.angle_median_ally_goal(self.ball_pos)), angle = self.angle_median_ally_goal(self.ball_pos))
+
+    @property
+    def close_defensive_pos(self):
         return soc.Vector2D(norm = ((self.ally_goal - self.ball_pos).x / 4. ) / math.cos(self.angle_median_ally_goal(self.ball_pos)), angle = self.angle_median_ally_goal(self.ball_pos))
 
     def angle_median_ally_goal(self, pos):
@@ -202,7 +206,7 @@ class SuperState:
 
     @property
     def ball_in_corner(self):
-        return min([self.ball_pos.distance(corner_pos) for corner_pos in [self.top_ally_corner, self.bot_ally_corner]]) < 15
+        return min([self.ball_pos.distance(corner_pos) for corner_pos in [self.top_ally_corner, self.bot_ally_corner]]) < 18
 
     @property
     def ally_corner_far_opp_near_player(self):
@@ -210,6 +214,10 @@ class SuperState:
         if self.player_pos.distance(corner) > self.nearest_opp.position.distance(corner):
             return self.bot_ally_corner
         else : return corner
+
+    @property
+    def is_ball_near_our_goal(self):
+        return abs((self.ball_pos - self.ally_goal).x) < 60
 
 
         
