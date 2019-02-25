@@ -2,7 +2,7 @@ import math
 import numpy as np
 import soccersimulator as soc
 import random
-import tree
+from . import tree
 
 class MyVector2D:
     @staticmethod
