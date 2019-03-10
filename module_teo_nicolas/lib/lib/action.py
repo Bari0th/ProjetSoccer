@@ -15,6 +15,13 @@ class Shoot(Action):
 	def __init__(self, name):
 		Action.__init__(self, name)
 
+class DontMove(Move):
+	def __init__(self):
+		Move.__init__(self, "DontMove")
+
+	def computeAction(self, superstate):
+		return soc.SoccerAction()
+
 class RunToBall(Move):
 	def __init__(self):
 		Move.__init__(self, "Ball")
@@ -33,6 +40,13 @@ class RunToDefensivePos(Move):
 		Move.__init__(self, "RunToDefensivePos")
 	def computeAction(self, superstate):
 		return soc.SoccerAction(acceleration = (superstate.defensive_pos + superstate.ball_pos - superstate.player_pos))
+
+class DontShoot(Shoot):
+	def __init__(self):
+		Shoot.__init__(self, "DontShoot")
+
+	def computeAction(self, superstate):
+		return soc.SoccerAction()
 
 class ShootToGoal(Shoot):
 	def __init__(self):

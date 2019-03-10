@@ -260,7 +260,3 @@ class TerrainData:
         if id_team == 1 :
             return self.getMyGoal(2)
         return self.getMyGoal(1)
-
-
-if __name__ == "__main__":
-    pass
