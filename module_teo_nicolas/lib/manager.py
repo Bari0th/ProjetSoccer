@@ -1,6 +1,6 @@
-from .lib import action as act
-from .lib import soccertools as ut
-from .lib import strategy_encapsulator as strat
+from .soccer import action as act
+from .soccer import soccertools as ut
+from .soccer import strategy_encapsulator as strat
 
 class Manager:
 

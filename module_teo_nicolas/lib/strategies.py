@@ -3,8 +3,8 @@ We only define compute_strategy here and ways to create strategies from them
 """
 import soccersimulator as soc
 
-from .lib import action as act
-from .lib import strategy_encapsulator as strat
+from .soccer import action as act
+from .soccer import strategy_encapsulator as strat
 
 from . import manager as man
 
