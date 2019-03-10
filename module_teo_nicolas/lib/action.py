@@ -70,8 +70,6 @@ class StrongShootToGoal(Shoot):
 		else : coeff = 3
 		return soc.SoccerAction(shoot = ((superstate.opp_goal - superstate.player_pos).normalize() * coeff))
 
-
-	
 class ShootToCornerFarFromOpp(Shoot):
 	def __init__(self):
 		Shoot.__init__(self, "ShootToCorner")
