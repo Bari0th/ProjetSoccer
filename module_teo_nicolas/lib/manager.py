@@ -16,7 +16,6 @@ class Manager:
         self.currentStep = -1
         self.nextActions = []
         self.ourTeam = it
-        self.possibleActions = act.getAllActions()
 
     @staticmethod
     def getInstance(id_team):
@@ -36,9 +35,9 @@ class Manager:
         nb_player_per_team = len(state.players) // 2
         key = self._computeKey(state)
 
-        actions = AlgoGen.getInstance().getData(nb_player_per_team, key)
+        actions = AlgoGen.getInstance().getData(self.ourTeam, nb_player_per_team, key)
         self.nextActions = actions
-        
+
     def _computeKey(self, state):
         key = ""
         for i in range(1, 3):
