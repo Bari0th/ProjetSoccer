@@ -1,45 +1,40 @@
 import soccersimulator as soc
-from utils.json import encode_json, decode_json
+from .utils.json import encode_json, decode_json
+from .soccer import discretizedterrain as d_terrain
+from .soccer import action as act
 
-class DiscretizedTerrain:
-    terrain = None
+class AlgoGen :
+    algo = None
 
     def __init__(self):
-        """
-        Singleton to get some data about the terrain such as its width, height, center, the goals etc.
-        """
-        self.WIDTH = soc.settings.GAME_WIDTH
-        self.HEIGHT = soc.settings.GAME_HEIGHT
-
-        self.NOMBRE_CASES_WIDTH = 2
-        self.NOMBRE_CASES_HEIGHT = 2 
-
-        self.TAILLE_CASE_WIDTH = self.WIDTH / self.NOMBRE_CASES_WIDTH
-        self.TAILLE_CASE_HEIGHT = self.HEIGHT / self.NOMBRE_CASES_HEIGHT
+        try:
+            self.data = decode_json("IA_DATA")
+        except FileNotFoundError:
+            self.data = {
+                "1" : dict(),
+                "2" : dict(),
+                "3" : dict(),
+                "4" : dict()
+            }
 
     @staticmethod
     def getInstance():
-        if not DiscretizedTerrain.terrain :
-            DiscretizedTerrain.terrain = DiscretizedTerrain()
-        return DiscretizedTerrain.terrain
+        if not AlgoGen.algo :
+            AlgoGen.algo = AlgoGen()
+        return AlgoGen.algo
 
-    def FromPositionToCase(self, position):
-        """
-        Prend un Vector2D
-        """
-        x, y = position.x, position.y
-        X = int(x / self.TAILLE_CASE_WIDTH)
-        Y = int(y / self.TAILLE_CASE_HEIGHT)
+    def getData(self, nb_player_per_team, key):
+        assert nb_player_per_team in [1,2,3,4]
+        dimension = d_terrain.DiscretizedTerrain.getInstance().getDimension()
 
-        return (X, Y)
+        if dimension in self.data[str(nb_player_per_team)]:
+            if key in self.data[str(nb_player_per_team)][dimension] :
+                return self.data[str(nb_player_per_team)][dimension][key]
 
-    def to_dict(self):
-        return self.__dict__
+        return [[act.DontMove(), act.DontShoot()]] * nb_player_per_team
 
 if __name__ == "__main__":
-    d = DiscretizedTerrain.getInstance()
-    pos = soc.Vector2D(149, 89)
-    print(d.FromPositionToCase(pos))
-    encode_json(d.to_dict(), "test")
+    a = AlgoGen.getInstance()
+    encode_json(a.data, "test")
     data = decode_json("test")
-    print(data["WIDTH"])
+    print(data["1"])

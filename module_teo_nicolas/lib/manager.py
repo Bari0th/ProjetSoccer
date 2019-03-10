@@ -1,6 +1,9 @@
 from .soccer import action as act
 from .soccer import soccertools as ut
 from .soccer import strategy_encapsulator as strat
+from .soccer import discretizedterrain as d_terrain
+
+from .soccergen import AlgoGen
 
 class Manager:
 
@@ -29,7 +32,26 @@ class Manager:
 
     def _computeNextActions(self, state):
         self.currentStep = state.step
-        self.nextActions = [[act.DontMove(), act.DontShoot()], [act.DontMove(), act.DontShoot()], [act.DontMove(), act.DontShoot()], [act.DontMove(), act.DontShoot()]]
+
+        nb_player_per_team = len(state.players) // 2
+        key = self._computeKey(state)
+
+        actions = AlgoGen.getInstance().getData(nb_player_per_team, key)
+        self.nextActions = actions
+        
+    def _computeKey(self, state):
+        key = ""
+        for i in range(1, 3):
+            team = [ (it, ip) for (it, ip) in state.players if it == i]
+            for it, ip in team :
+                p_state = state.player_state(it, ip)
+                pos = p_state.position
+                case = d_terrain.DiscretizedTerrain.getInstance().FromPositionToCase(pos)
+                key += str(case)
+
+        case = d_terrain.DiscretizedTerrain.getInstance().FromPositionToCase(state.ball.position)
+        key += str(case)
+        return key
 
 
 if __name__ == "__main__":
