@@ -6,28 +6,29 @@ class Manager:
 
     manager = None
 
-    def __init__(self):
+    def __init__(self, it):
         """
         Singleton to compute the next actions for all players each tick
         """
         self.currentStep = -1
-        self.nextActions = dict()
+        self.nextActions = []
+        self.ourTeam = it
 
     @staticmethod
-    def getInstance():
+    def getInstance(id_team):
         if not Manager.manager :
-            Manager.manager = Manager()
+            Manager.manager = Manager(id_team)
         return Manager.manager
 
-    def getNextActions(self, state, id_team):
-        assert id_team in [1,2]
+    def getNextActions(self, state, id_player):
+        assert id_player in [0,1,2,3]
         if state.step > self.currentStep :
-            self._computeNextActions(state, id_team)
-        return self.nextActions
+            self._computeNextActions(state)
+        return self.nextActions[id_player]
 
-    def _computeNextActions(self, state, id_team):
-        self.currentStep += 1
-        self.nextActions = dict()
+    def _computeNextActions(self, state):
+        self.currentStep = state.step
+        self.nextActions = [[act.DontMove(), act.DontShoot()], [act.DontMove(), act.DontShoot()], [act.DontMove(), act.DontShoot()], [act.DontMove(), act.DontShoot()]]
 
 
 if __name__ == "__main__":

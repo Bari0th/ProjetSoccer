@@ -1,14 +1,12 @@
 """
 We only define compute_strategy here and ways to create strategies from them
 """
-import math
-
 import soccersimulator as soc
 
 from .lib import action as act
-from .lib import soccertools as ut
 from .lib import strategy_encapsulator as strat
 
+from . import manager as man
 
 def createStrategy(behavior):
     return strat.SimpleStrategy(behavior)
@@ -24,7 +22,10 @@ class AutoBehavior(strat.StrategyBehavior):
             strat.StrategyBehavior.__init__(self, "Auto", act.DontMove(), act.DontShoot())
             
     def updateActions(self, super_state):
-        if super_state.player_pos.distance(super_state.opp_goal) > 30:
-            self.changeShootAction(act.ShootToMoveToGoal())
-        else : 
-            self.changeShootAction(act.StrongShootToGoal())
+        state = super_state.state
+        it = super_state.it
+        ip = super_state.ip
+        actions = man.Manager.getInstance(it).getNextActions(state, ip)
+            
+        self.changeShootAction(actions[0])
+        self.changeShootAction(actions[1])
