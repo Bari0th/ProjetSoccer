@@ -13,6 +13,7 @@ class Manager:
         self.currentStep = -1
         self.nextActions = []
         self.ourTeam = it
+        self.possibleActions = act.getAllActions()
 
     @staticmethod
     def getInstance(id_team):

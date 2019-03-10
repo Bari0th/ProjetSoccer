@@ -1,6 +1,12 @@
 import soccersimulator as soc
 import math
 
+def getAllActions():
+	actions = dict()
+	actions["move"] = Move.__subclasses__()
+	actions["shoot"] = Shoot.__subclasses__()
+	return actions
+
 class Action:
 	def __init__(self, name):
 		self.name = name
@@ -90,3 +96,6 @@ class ShootToCornerFarFromOpp(Shoot):
 	def computeAction(self,superstate):
 		shoot = (superstate.ally_corner_far_opp_near_player - superstate.player_pos).normalize() * 4
 		return soc.SoccerAction( shoot = shoot)
+
+if __name__ == "__main__":
+	print(getAllActions())
