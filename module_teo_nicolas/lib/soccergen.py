@@ -10,6 +10,8 @@ class AlgoGen :
     def __init__(self):
         self.possibleActions = act.getAllActions()
         self.max_steps = 1000000
+        self.max_round_step = 500
+        self.simu = None
 
         try:
             self.data = decode_json("IA_DATA")
@@ -37,21 +39,30 @@ class AlgoGen :
 
         return [[act.DontMove(), act.DontShoot()]] * nb_player_per_team
 
-    def Train(self, nb_player_per_team, show=False): 
-        if not self.simu: 
-            team1 = soc.SoccerTeam("Team␣1") 
-            team2 = soc.SoccerTeam("Team␣2")
+    def Train(self, nb_player_per_team, show=False):
+        team1 = soc.SoccerTeam("Team␣1") 
+        team2 = soc.SoccerTeam("Team␣2")
 
-            strat = strats.createStrategy(strat.AutoBehavior())
-            team1.add(strat.name, strat) 
-            
-            team2.add(soc.Strategy().name, soc.Strategy()) 
-            self.simu = soc.Simulation(team1, team2, max_steps=self.max_steps) 
-            self.simu.listeners += self
+        for i in range(nb_player_per_team):
+            strat = strats.createStrategy(strats.AutoBehavior())
+            team1.add(strat.name + " " + str(i), strat)
+            strat = strats.createStrategy(strats.AttaquantBehavior())
+            team2.add(strat.name + " " + str(i), strat)
+
+        self.simu = soc.Simulation(team1, team2, max_steps=self.max_steps) 
+        self.simu.listeners += self
+
         if show: 
             soc.show_simu(self.simu) 
         else: 
             self.simu.start()
+
+    def begin_match(self, team1, team2, state): 
+        self.last_step = 0 # Step of the last round 
+        self.criterion = 0 # Criterion to maximize (here, number of goals) 
+        self.cpt_trials = 0 # Counter for trials 
+
+        self.res = dict() # Dictionary of results
 
     
 

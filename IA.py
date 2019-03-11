@@ -1,15 +1,14 @@
 from module_teo_nicolas.lib.soccergen import AlgoGen
+from module_teo_nicolas.lib.utils.tree import SoccerTree
+from module_teo_nicolas.lib.soccer.discretizedterrain import DiscretizedTerrain
 
-todo : 
+nb_player_per_team = 1
 
-- Entrainer pour un joueur sur une grille 2 * 2 (le faire pour les deux équipes) :
-    - générer les 64 possibilités (4 pour le joueur allié, 4 pour le joueur opp, 4 pour la balle)
-    - pour chaque possibilité, tester les meilleures actions avec un algo génétique : il faut penser à la création des gènes
+d = DiscretizedTerrain.getInstance()
+all_coords = d.AllPossibleCoords()
+tree = SoccerTree(all_coords, nb_player_per_team)
+paths = tree.paths
 
+algo = AlgoGen.getInstance()
 
-- Pour un joueur je pense qu'on pourra monter à une grille 10 * 10
-- Pour 2 : 5 * 5
-- Pour 3 : 5 * 2
-- Pour 4 : 3 * 2 
-
-(Tout fait environ 10 millions de combinaisons)
+algo.Train(nb_player_per_team, show=True)

@@ -99,9 +99,8 @@ class SoccerIndividual(gen.Individual):
                     cuttingPoint = random.randint(0, len(father.genome) - 1)
                     for gene in father.genom[:cuttingPoint]:
                         self.genome.append(SoccerGene(gene=gene))
-                    for gene in mother.genome :
-                        if gene not in self.genome :
-                            self.genome.append(SoccerGene(gene=gene))
+                    for gene in mother.genome[cuttingPoint:] :
+                        self.genome.append(SoccerGene(gene=gene))
                 
                 self.Mutate()
             else :
