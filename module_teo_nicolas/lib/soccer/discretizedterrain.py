@@ -34,3 +34,7 @@ class DiscretizedTerrain:
 
     def getDimension(self):
         return (self.NOMBRE_CASES_WIDTH, self.NOMBRE_CASES_HEIGHT)
+
+    def AllPossibleCoords(self):
+        coords = [(x, y) for x in range(self.NOMBRE_CASES_WIDTH) for y in range(self.NOMBRE_CASES_HEIGHT)]
+        return coords
