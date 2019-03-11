@@ -1,4 +1,5 @@
 import soccersimulator as soc
+import random
 
 class DiscretizedTerrain:
     terrain = None
@@ -27,10 +28,27 @@ class DiscretizedTerrain:
         Prend un Vector2D
         """
         x, y = position.x, position.y
-        X = int(x / self.TAILLE_CASE_WIDTH)
-        Y = int(y / self.TAILLE_CASE_HEIGHT)
+        X = x // self.TAILLE_CASE_WIDTH
+        Y = y // self.TAILLE_CASE_HEIGHT
 
         return (X, Y)
+
+    def FromCaseToPosition(self, case_coord):
+        x, y = case_coord
+        assert x >= 0 and x < self.NOMBRE_CASES_WIDTH
+        assert y >= 0 and y < self.NOMBRE_CASES_HEIGHT
+
+        minX = self.TAILLE_CASE_WIDTH * x
+        minY = self.TAILLE_CASE_HEIGHT * y
+
+        maxX = minX + self.TAILLE_CASE_WIDTH - 1
+        maxY = minY + self.TAILLE_CASE_HEIGHT - 1
+
+        X = random.uniform(minX, maxX)
+        Y = random.uniform(minY, maxY)
+
+        return soc.Vector2D(X, Y)
+        
 
     def getDimension(self):
         return (self.NOMBRE_CASES_WIDTH, self.NOMBRE_CASES_HEIGHT)
@@ -38,3 +56,10 @@ class DiscretizedTerrain:
     def AllPossibleCoords(self):
         coords = [(x, y) for x in range(self.NOMBRE_CASES_WIDTH) for y in range(self.NOMBRE_CASES_HEIGHT)]
         return coords
+
+
+if __name__ == "__main__":
+    d = DiscretizedTerrain.getInstance()
+    coords = d.AllPossibleCoords()
+    for coord in coords :
+        print(d.FromCaseToPosition(coord))
