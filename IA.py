@@ -2,7 +2,7 @@ from module_teo_nicolas.lib.soccergen import AlgoGen
 from module_teo_nicolas.lib.utils.tree import SoccerTree
 from module_teo_nicolas.lib.soccer.discretizedterrain import DiscretizedTerrain
 
-nb_player_per_team = 1
+nb_player_per_team = 2
 
 d = DiscretizedTerrain.getInstance()
 all_coords = d.AllPossibleCoords()

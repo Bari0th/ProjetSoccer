@@ -15,11 +15,10 @@ class AlgoGen :
         self.nb_player_per_team = 0
 
         # genetic
-        self.nb_iterations = 50
-        self.nb_individuals = 20
+        self.nb_iterations = 20
+        self.nb_individuals = 10
         self.genome_size = 10
-        self.steps_per_action = 20
-        self.curr_ind_index = 0
+        self.steps_per_action = 30
 
         self.max_round_step = self.steps_per_action * self.genome_size # steps to test on individual
         self.steps_per_iteration = self.nb_individuals * self.max_round_step 
@@ -69,6 +68,9 @@ class AlgoGen :
         return key
 
     def Train(self, path, nb_player_per_team, show=False):
+        self.current_individual_index = 0
+        self.current_iteration_index = 0
+        self.current_gene_index = 0
         self.currentPath = path
         self.nb_player_per_team = nb_player_per_team
 
@@ -89,6 +91,9 @@ class AlgoGen :
         self.simu = soc.Simulation(team1, team2, max_steps=self.max_steps) 
         self.simu.listeners += self
 
+        print("Path ", path)
+        print("max_round_step : {}, steps_per_iteration : {}".format(self.max_round_step, self.steps_per_iteration))
+
         if show: 
             soc.show_simu(self.simu) 
         else: 
@@ -98,36 +103,44 @@ class AlgoGen :
         return team.players[i].strategy.behavior
 
     def get_current_gene_for_ith_player(self, i, step):
-        current_iter = self.get_current_iteration_index(step)
-        move_index, shoot_index = self.population[i][current_iter]
+        print("******************")
+        print("step " , step, "/", self.max_steps - 1)
+        print("current gene ", self.current_gene_index, "/", self.genome_size - 1)
+        print("Current individual ", self.current_individual_index, "/", self.nb_individuals - 1)
+        print("For player ", i, "/", self.nb_player_per_team - 1)
+        print("In team ", 1)
+        current_iter = self.current_iteration_index
+        print("FOR ITER ", current_iter, "/", self.nb_iterations - 1)
+        move_index, shoot_index = self.population[i][self.current_individual_index][self.current_gene_index]
         actMove = self.possibleActions["moves"][self.data["moves"][move_index]]()
         actShoot = self.possibleActions["shoots"][self.data["shoots"][shoot_index]]()
+        print(actMove.name, actShoot.name)
+        print("******************")
         return actMove, actShoot
 
-    def get_current_iteration_index(self, step):
-        return step // self.steps_per_iteration
-
     def begin_match(self, team1, team2, state):
-
-        self.last_step = 0
 
         self.res = dict() # Dictionary of results
 
         self.key = self._computeKey(self.currentPath)
 
-        # initilaiser la population
+        # initialiser la population
         self.population = []
         shoots_len = len(self.data["shoots"])
         moves_len = len(self.data["moves"])
-        for i in range (self.nb_individuals) :
-            individual = []
-            for j in range(self.genome_size):
-                gene = (random.randrange(0, moves_len), random.randrange(0, shoots_len))
-                individual.append(gene)
 
-            self.population.append(individual)
+        for k in range(self.nb_player_per_team):
+            self.population.append([])
+            for i in range (self.nb_individuals) :
+                individual = []
+                for j in range(self.genome_size):
+                    gene = (random.randrange(0, moves_len), random.randrange(0, shoots_len))
+                    individual.append(gene)
+
+                self.population[k].append(individual)
 
     def begin_round(self, team1, team2, state):
+        print("-------------------BEGIN ROUND--------------------")
         for i in range (len(self.currentPath)):
             coord = self.currentPath[i]
             pos = d_terrain.DiscretizedTerrain.getInstance().FromCaseToPosition(coord)
@@ -140,30 +153,38 @@ class AlgoGen :
                 self.simu.state.ball.position = pos
             else : #team2
                 self.simu.state.states[(2, i - self.nb_player_per_team)].position = pos
-
-        self.last_step = self.simu.step # Last step of the game
         
-    def update_round(self, team1, team2, state): # Stop the round if it is too long 
-        if state.step > self.last_step + self.max_round_step: 
-            self.simu.end_round()
+    def update_round(self, team1, team2, state): # Stop the round if it is too long
+        if state.step % self.steps_per_action == 0 :
+            print("Increment gene")
+            self.current_gene_index += 1
+            self.current_gene_index %= self.genome_size
 
-    def end_round(self, team1, team2, state): 
-        # A round ends when there is a goal of if max step is achieved 
-        if state.goal > 0: 
-            self.criterion += 1 # Increment criterion
-        self.cpt_trials += 1 # Increment number of trials
+            if self.current_gene_index == 0 :
+                print("On a fait tous les genes on passe a l'individu suivant")
+                self.simu.end_round()
+                return
 
-        print("Crit:␣{}␣␣␣Cpt:␣{}".format(self.criterion, self.cpt_trials))
-        if self.cpt_trials >= self.trials: # Save the result 
-            self.res[tuple(self.cur_param.items())] = self.criterion / self.trials
-        # Reset parameters 
-        self.criterion = 0 
-        self.cpt_trials = 0
-        # Next parameter value 
-        """
-        if self.cur_param is not None: 
-            self.simu.end_match()
-        """
+            for i in range (self.nb_player_per_team):
+                m, s = self.get_current_gene_for_ith_player(i, self.simu.step)
+                self.get_ith_player_behavior(team1, i).changeMoveAction(m)
+                self.get_ith_player_behavior(team1, i).changeShootAction(s)
+
+    def end_round(self, team1, team2, state):
+        print("Le round est fini, on passe à l'individu suivant et on recommence au premier gene")
+        self.current_gene_index = 0
+        self.current_individual_index += 1
+        self.current_individual_index %= self.nb_individuals
+        if self.current_individual_index == 0 :
+            print("On a fait le tour des individus, on passe la génération suivante")
+            self.current_iteration_index += 1
+            self.current_iteration_index %= self.nb_iterations
+            if self.current_iteration_index == 0 :
+                print("On a fait le tours des iterations, on arrete le match")
+                self.simu.end_match()
+                return
+        print("-------------------END ROUND--------------------")
+        pass
 
 if __name__ == "__main__":
     a = AlgoGen.getInstance()
