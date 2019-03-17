@@ -2,6 +2,7 @@
 We only define compute_strategy here and ways to create strategies from them
 """
 import soccersimulator as soc
+import math
 
 from .soccer import action as act
 from .soccer import strategy_encapsulator as strat
@@ -30,6 +31,9 @@ class AutoBehavior(strat.StrategyBehavior):
         self.changeShootAction(actions[0])
         self.changeShootAction(actions[1])
 
+class TraineeBehavior(strat.StrategyBehavior):
+    def __init__(self):
+            strat.StrategyBehavior.__init__(self, "Trainee", act.DontMove(), act.DontShoot())
 
 class FonceurBehavior(strat.StrategyBehavior):
     def __init__(self):
@@ -47,7 +51,7 @@ class AttaquantBehavior(strat.StrategyBehavior):
         
 class GoalBehaviorTeam(strat.StrategyBehavior):
     def __init__(self):
-            strat.StrategyBehavior.__init__(self, "Goal", act.RunToDefensivePos(), act.ShootToNearestAlly())
+            strat.StrategyBehavior.__init__(self, "Goal Team", act.RunToDefensivePos(), act.ShootToNearestAlly())
 
     def updateActions(self, super_state):
         if super_state.is_ball_nearest :
@@ -66,7 +70,7 @@ class GoalBehaviorTeam(strat.StrategyBehavior):
 
 class GoalBehaviorAlone(strat.StrategyBehavior):
     def __init__(self):
-            strat.StrategyBehavior.__init__(self, "Goal", act.RunToDefensivePos(), act.ShootToCornerFarFromOpp())
+            strat.StrategyBehavior.__init__(self, "Goal Alone", act.RunToDefensivePos(), act.ShootToCornerFarFromOpp())
 
     def updateActions(self, super_state):
         if super_state.ball_in_corner:

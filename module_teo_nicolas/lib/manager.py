@@ -33,24 +33,24 @@ class Manager:
         self.currentStep = state.step
 
         nb_player_per_team = len(state.players) // 2
-        key = self._computeKey(state)
+        path = self._getPath(state)
 
-        actions = AlgoGen.getInstance().getData(self.ourTeam, nb_player_per_team, key)
+        actions = AlgoGen.getInstance().getData(self.ourTeam, nb_player_per_team, path)
         self.nextActions = actions
 
-    def _computeKey(self, state):
-        key = ""
+    def _getPath(self, state):
+        path = []
         for i in range(1, 3):
             team = [ (it, ip) for (it, ip) in state.players if it == i]
             for it, ip in team :
                 p_state = state.player_state(it, ip)
                 pos = p_state.position
                 case = d_terrain.DiscretizedTerrain.getInstance().FromPositionToCase(pos)
-                key += str(case)
+                path.append(case)
 
         case = d_terrain.DiscretizedTerrain.getInstance().FromPositionToCase(state.ball.position)
-        key += str(case)
-        return key
+        path.append(case)
+        return path
 
 
 if __name__ == "__main__":

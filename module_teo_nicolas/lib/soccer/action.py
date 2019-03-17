@@ -3,8 +3,27 @@ import math
 
 def getAllActions():
 	actions = dict()
-	actions["move"] = Move.__subclasses__()
-	actions["shoot"] = Shoot.__subclasses__()
+
+	moves_classes = Move.__subclasses__()
+	tuples = list(map(lambda x : (x.__name__, x), moves_classes))
+	moves = {'names' : []}
+
+	for name, move_class in tuples :
+		moves["names"].append(name)
+		moves[name] = move_class
+
+
+	shoots_classes = Shoot.__subclasses__()
+	tuples = list(map(lambda x : (x.__name__, x), shoots_classes))
+	shoots = {'names' : []}
+
+	for name, shoot_class in tuples :
+		shoots["names"].append(name)
+		shoots[name] = shoot_class
+
+
+	actions["moves"] = moves
+	actions["shoots"] = shoots
 	return actions
 
 class Action:

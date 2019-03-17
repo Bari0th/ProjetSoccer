@@ -11,4 +11,5 @@ paths = tree.paths
 
 algo = AlgoGen.getInstance()
 
-algo.Train(nb_player_per_team, show=True)
+for path in paths :
+    algo.Train(path, nb_player_per_team, show=True)
