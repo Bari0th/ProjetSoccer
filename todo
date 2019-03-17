@@ -11,3 +11,10 @@ todo :
 - Pour 4 : 3 * 2 
 
 (Tout fait environ 10 millions de combinaisons)
+
+
+- rendre l'algo génétique qui marche pour la team 2
+- refactor le code
+- at the end of the match, save the result in json
+- genetic algo
+- parler au prof du double begin round

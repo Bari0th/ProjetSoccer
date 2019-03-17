@@ -1,6 +1,7 @@
 import soccersimulator as soc
 from .utils.json import encode_json, decode_json
 from .soccer import discretizedterrain as d_terrain
+from .soccer import soccertools as tools
 from .soccer import action as act
 from . import strategies as strats
 import random
@@ -14,8 +15,10 @@ class AlgoGen :
         self.currentPath = None
         self.nb_player_per_team = 0
 
+        self.terrain = tools.TerrainData.getInstance()
+
         # genetic
-        self.nb_iterations = 20
+        self.nb_iterations = 15
         self.nb_individuals = 10
         self.genome_size = 10
         self.steps_per_action = 30
@@ -78,8 +81,7 @@ class AlgoGen :
         team2 = soc.SoccerTeam("Team␣2")
 
         for i in range(nb_player_per_team):
-            behavior = strats.TraineeBehavior()
-            strat = strats.createStrategy(behavior)
+            strat = strats.createStrategy(strats.TraineeBehavior())
             team1.add(strat.name + " " + str(i), strat)
 
             if(nb_player_per_team == 1):
@@ -97,7 +99,7 @@ class AlgoGen :
         if show: 
             soc.show_simu(self.simu) 
         else: 
-            self.simu.start()
+            self.simu.start() 
 
     def get_ith_player_behavior(self, team, i):
         return team.players[i].strategy.behavior
@@ -118,6 +120,10 @@ class AlgoGen :
         print("******************")
         return actMove, actShoot
 
+    def ResetFitnesses(self):
+        for i in range(len(self.fitnesses)):
+            self.fitnesses[i] = 0
+
     def begin_match(self, team1, team2, state):
 
         self.res = dict() # Dictionary of results
@@ -126,6 +132,7 @@ class AlgoGen :
 
         # initialiser la population
         self.population = []
+        self.fitnesses = [0] * self.nb_individuals
         shoots_len = len(self.data["shoots"])
         moves_len = len(self.data["moves"])
 
@@ -136,7 +143,6 @@ class AlgoGen :
                 for j in range(self.genome_size):
                     gene = (random.randrange(0, moves_len), random.randrange(0, shoots_len))
                     individual.append(gene)
-
                 self.population[k].append(individual)
 
     def begin_round(self, team1, team2, state):
@@ -154,7 +160,11 @@ class AlgoGen :
             else : #team2
                 self.simu.state.states[(2, i - self.nb_player_per_team)].position = pos
         
-    def update_round(self, team1, team2, state): # Stop the round if it is too long
+    def update_round(self, team1, team2, state):
+        distance_to_goal = self.simu.state.ball.position.distance(self.terrain.getTheOtherGoal(1).vector)
+        self.fitnesses[self.current_individual_index] -= distance_to_goal
+        print(self.fitnesses)
+
         if state.step % self.steps_per_action == 0 :
             print("Increment gene")
             self.current_gene_index += 1
@@ -171,6 +181,15 @@ class AlgoGen :
                 self.get_ith_player_behavior(team1, i).changeShootAction(s)
 
     def end_round(self, team1, team2, state):
+        coeff = 3 * self.max_round_step / ((state.step % self.max_round_step) + 1)
+        print("coeff ", coeff)
+        if state.goal == 1 :
+            print("team 1 marque")
+            self.fitnesses[self.current_individual_index] += abs(self.fitnesses[self.current_individual_index]) * coeff
+        elif state.goal == 2 :
+            print("team 2 marque")
+            self.fitnesses[self.current_individual_index] -= abs(self.fitnesses[self.current_individual_index]) * coeff
+        
         print("Le round est fini, on passe à l'individu suivant et on recommence au premier gene")
         self.current_gene_index = 0
         self.current_individual_index += 1
@@ -183,7 +202,14 @@ class AlgoGen :
                 print("On a fait le tours des iterations, on arrete le match")
                 self.simu.end_match()
                 return
+
+            self.ResetFitnesses()
+
+            
         print("-------------------END ROUND--------------------")
+        pass
+
+    def end_match(self, team1, team2, state):
         pass
 
 if __name__ == "__main__":

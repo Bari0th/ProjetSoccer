@@ -13,3 +13,4 @@ algo = AlgoGen.getInstance()
 
 for path in paths :
     algo.Train(path, nb_player_per_team, show=True)
+    break
