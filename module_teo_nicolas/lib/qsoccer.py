@@ -20,9 +20,10 @@ class QSoccer:
         self.nb_player_per_team = nb_player_per_team
         self.terrain = tools.TerrainData.getInstance()
 
-        # create q table and counts
-        self.q_table = {}
-        self.counts = {}
+        self.dimension = self.d_terrain.getDimension()
+        self.possibleActions = act.getAllActions()
+
+        self.data = self._Load()
 
         self.states = []
         self.actions = []
@@ -32,17 +33,29 @@ class QSoccer:
         # Initiate Soccer
         self.simu = None
         
-
     def _initStateSpace(self):
         all_coords = self.d_terrain.AllPossibleCoords()
         tree = SoccerTree(all_coords, self.nb_player_per_team)
         self.states = list(map(lambda x : tuple(x), tree.paths))
 
     def _initQTableAndCounts(self):
-        self.possibleActions = act.getAllActions()
-        moves = self.possibleActions["moves"]["names"]
-        shoots = self.possibleActions["shoots"]["names"]
+        try :
+            data_with_dim = self.data["q_tables"][str(self.dimension)]
+            self.q_table = data_with_dim["q_table"]
+            self.counts = data_with_dim["counts"]
+        except KeyError as e :
+            self._newQTable()
 
+    def _newQTable(self):
+        try :
+            moves = self.data["moves"]
+            shoots = self.data["shoots"]
+        except KeyError as e :
+            moves = self.data["moves"] = self.possibleActions["moves"]["names"]
+            shoots = self.data["shoots"] = self.possibleActions["shoots"]["names"]
+
+        self.q_table = {}
+        self.counts = {}
         moves_len = len(moves)
         shoots_len = len(shoots)
         for state in self.states :
@@ -54,7 +67,6 @@ class QSoccer:
                     self.actions.append(key)
                     self.q_table[str(state)][str(key)] = 0
                     self.counts[str(state)][str(key)] = 0
-                    
 
     def Train(self, show=False):
         self.epochs = nb_epochs
@@ -85,11 +97,27 @@ class QSoccer:
         else: 
             self.simu.start() 
 
-    def _testSave(self):
-        encode_json(self.q_table, "q_table")
+    def _Save(self):
+        q_tables_key = "q_tables"
+        if q_tables_key not in self.data :
+            self.data[q_tables_key] = {}
 
-    def _testLoad(self):
-        data = decode_json("q_table")
+        dim = str(self.dimension)
+        if dim not in self.data[q_tables_key] :
+            self.data[q_tables_key][dim] = {}
+
+        self.data[q_tables_key][dim]["q_table"] = self.q_table
+        self.data[q_tables_key][dim]["counts"] = self.counts
+        
+        encode_json(self.data, "q_data")
+
+    def _Load(self):
+        try:
+            data = decode_json("q_data")
+        except FileNotFoundError:
+            print("Fichier q_data non trouvé, création d'un data vide")
+            data = {}
+        
         return data
 
     def _getS0(self):
@@ -104,8 +132,8 @@ class QSoccer:
     def _get_current_action_for_ith_player(self, i):
         self.currentAction = self._getA0()
         move_index, shoot_index = self.currentAction
-        actMove = self.possibleActions["moves"][self.possibleActions["moves"]["names"][move_index]]()
-        actShoot = self.possibleActions["shoots"][self.possibleActions["shoots"]["names"][shoot_index]]()
+        actMove = self.possibleActions["moves"][self.data["moves"][move_index]]()
+        actShoot = self.possibleActions["shoots"][self.data["shoots"][shoot_index]]()
         return actMove, actShoot
 
     def _getNextAction(self, act_probs):
@@ -245,4 +273,4 @@ class QSoccer:
         print("Current epoch : {}".format(self.current_epoch))
 
     def end_match(self, team1, team2, state):
-        self._testSave()
+        self._Save()

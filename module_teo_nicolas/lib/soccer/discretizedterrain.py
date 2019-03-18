@@ -11,8 +11,8 @@ class DiscretizedTerrain:
         self.WIDTH = soc.settings.GAME_WIDTH
         self.HEIGHT = soc.settings.GAME_HEIGHT
 
-        self.NOMBRE_CASES_WIDTH = 2
-        self.NOMBRE_CASES_HEIGHT = 2 
+        self.NOMBRE_CASES_WIDTH = 1
+        self.NOMBRE_CASES_HEIGHT = 1
 
         self.TAILLE_CASE_WIDTH = self.WIDTH / self.NOMBRE_CASES_WIDTH
         self.TAILLE_CASE_HEIGHT = self.HEIGHT / self.NOMBRE_CASES_HEIGHT
