@@ -145,16 +145,19 @@ class QSoccer:
 
         if soccerstate.goal > 0 :
             coeff = 3 * self.step_per_epoch / ((soccerstate.step % self.step_per_epoch) + 1)
+            old = self.returns[self.currentState][self.currentAction]
             print("coeff ", coeff)
             if soccerstate.goal == 1 :
                 print("team 1 marque")
-                self.returns[self.currentState][self.currentAction]  += abs(self.returns[self.currentState][self.currentAction]) * coeff
+                sign = 1
             elif soccerstate.goal == 2 :
+                sign = -1
                 print("team 2 marque")
-                self.returns[self.currentState][self.currentAction]  -= abs(self.returns[self.currentState][self.currentAction]) * coeff
+        
+            self.returns[self.currentState][self.currentAction]  += sign * abs(old) * coeff
 
-
-        self.counts[str(self.currentState)][str(self.currentAction)] += 1
+        counts = self._getCounts(self.currentState, self.currentAction)
+        self._setCounts(self.currentState, self.currentAction, counts + 1)
 
 
     def _updatePlayerBehavior(self, team):
@@ -165,10 +168,30 @@ class QSoccer:
     def _updateQTable(self):
         for state in self.returns :
             for action in self.returns[state] :
-                old = self.q_table[str(state)][str(action)]
-                count = self.counts[str(state)][str(action)]
-                self.q_table[str(state)][str(action)] = old + (1.0 / count) * (self.returns[state][action] - old)
-                print("({}, {}) : OLD = {} / NEW = {}".format(state, action, old, self.q_table[str(state)][str(action)]))
+                old = self._getQValue(state, action)
+                count = self._getCounts(state, action)
+                new = old + (1.0 / count) * (self.returns[state][action] - old)
+                self._setQValue(state, action, new)
+                print("({}, {}) : OLD = {} / NEW = {}".format(state, action, old, new))
+
+    def _getQRow(self, state):
+        return self.q_table[str(state)]
+
+    def _getQValue(self, state, action):
+        row = self._getQRow(state)
+        return row[str(action)]
+
+    def _setQValue(self, state, action, value):
+        row = self._getQRow(state)
+        row[str(action)] = value
+
+    def _getCounts(self, state, action):
+        row = self.counts[str(state)]
+        return row[str(action)]
+    
+    def _setCounts(self, state, action, value):
+        row = self.counts[str(state)]
+        row[str(action)] = value
 
     def begin_match(self, team1, team2, state):
         pass
@@ -193,7 +216,7 @@ class QSoccer:
     def update_round(self, team1, team2, state):
         self._evaluate(state)
 
-        act_probs = self.q_table[str(self.currentState)]
+        act_probs = self._getQRow(self.currentState)
         self.currentAction = self._getNextAction(act_probs)
 
         self.currentState = self._getNextState(state)
