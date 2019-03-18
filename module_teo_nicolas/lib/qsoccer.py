@@ -9,9 +9,9 @@ from .soccer import soccertools as tools
 from .utils.json import decode_json, encode_json
 from .utils.tree import SoccerTree
 
-nb_epochs = 5
+nb_epochs = 2
 epsilon = 0.1
-step_per_epoch = 4
+step_per_epoch = 1
 
 class QSoccer:
     algo = None
@@ -46,13 +46,23 @@ class QSoccer:
         except KeyError as e :
             self._newQTable()
 
+        self._initActions()
+
+    def _initActions(self):
+        moves = self.data["moves"]
+        shoots = self.data["shoots"]
+        moves_len = len(moves)
+        shoots_len = len(shoots)
+
+        for i in range(moves_len):
+            for j in range(shoots_len):
+                key = (i , j)
+                self.actions.append(key)
+
+
     def _newQTable(self):
-        try :
-            moves = self.data["moves"]
-            shoots = self.data["shoots"]
-        except KeyError as e :
-            moves = self.data["moves"] = self.possibleActions["moves"]["names"]
-            shoots = self.data["shoots"] = self.possibleActions["shoots"]["names"]
+        moves = self.data["moves"]
+        shoots = self.data["shoots"]
 
         self.q_table = {}
         self.counts = {}
@@ -64,7 +74,6 @@ class QSoccer:
             for i in range(moves_len):
                 for j in range(shoots_len):
                     key = (i , j)
-                    self.actions.append(key)
                     self.q_table[str(state)][str(key)] = 0
                     self.counts[str(state)][str(key)] = 0
 
@@ -117,6 +126,14 @@ class QSoccer:
         except FileNotFoundError:
             print("Fichier q_data non trouvé, création d'un data vide")
             data = {}
+
+        move_key = "moves"
+        if move_key not in data :
+            data[move_key] = self.possibleActions[move_key]["names"]
+
+        shoots_key = "shoots"
+        if shoots_key not in data :
+            data[shoots_key] = self.possibleActions[shoots_key]["names"]
         
         return data
 
