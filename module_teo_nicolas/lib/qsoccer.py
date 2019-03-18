@@ -9,6 +9,9 @@ from .soccer import soccertools as tools
 from .utils.json import decode_json, encode_json
 from .utils.tree import SoccerTree
 
+nb_epochs = 5
+epsilon = 0.1
+step_per_epoch = 4
 
 class QSoccer:
     algo = None
@@ -54,11 +57,11 @@ class QSoccer:
                     
 
     def Train(self, show=False):
-        self.epochs = 5
-        self.epsilon = 0.1
+        self.epochs = nb_epochs
+        self.epsilon = epsilon
         self.current_epoch = 0
 
-        self.step_per_epoch = 4
+        self.step_per_epoch = step_per_epoch
         self.max_steps = self.epochs * self.step_per_epoch
 
         team1 = soc.SoccerTeam("Jambon") 
