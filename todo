@@ -18,3 +18,4 @@ todo :
 - at the end of the match, save the result in json
 - genetic algo
 - parler au prof du double begin round
+- fitness : si la balle est proche de notre goal et que le joueur est loin, rajouter à la fitness la vitesse à laquelle le joueur se rapproche de la balle

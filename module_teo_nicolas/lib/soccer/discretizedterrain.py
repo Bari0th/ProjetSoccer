@@ -23,6 +23,15 @@ class DiscretizedTerrain:
             DiscretizedTerrain.terrain = DiscretizedTerrain()
         return DiscretizedTerrain.terrain
 
+    def clamp(self, value, mini, maxi):
+        if value < mini :
+            return mini
+
+        if value > maxi :
+            return maxi
+
+        return value
+
     def FromPositionToCase(self, position):
         """
         Prend un Vector2D
@@ -31,7 +40,10 @@ class DiscretizedTerrain:
         X = x // self.TAILLE_CASE_WIDTH
         Y = y // self.TAILLE_CASE_HEIGHT
 
-        return (X, Y)
+        X = self.clamp(X, 0, self.NOMBRE_CASES_WIDTH - 1)
+        Y = self.clamp(Y, 0, self.NOMBRE_CASES_HEIGHT - 1)
+
+        return (int(X), int(Y))
 
     def FromCaseToPosition(self, case_coord):
         x, y = case_coord
