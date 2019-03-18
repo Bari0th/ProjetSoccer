@@ -78,7 +78,10 @@ class SuperState:
 		
     @property	
     def nearest_ally(self):
-        return min([(ally.position.distance(self.player_pos), ally) for ally in self.allies], key=self.key)[1]
+        l = [(ally.position.distance(self.player_pos), ally) for ally in self.allies]
+        if len(l) > 0 :
+            return min(l, key=self.key)[1]
+        return self.player
 		
     @property
     def nearest_player(self):
@@ -90,7 +93,10 @@ class SuperState:
 
     @property
     def nearest_ball_ally(self):
-        return min([(ally.position.distance(self.ball_pos), ally) for ally in self.allies], key=self.key)[1]
+        l = [(ally.position.distance(self.ball_pos), ally) for ally in self.allies]
+        if len(l) > 0 :
+            return min(l, key=self.key)[1]
+        return self.player
 	
     @property	
     def nearest_ball_opp(self):
@@ -268,7 +274,3 @@ class TerrainData:
         if id_team == 1 :
             return self.getMyGoal(2)
         return self.getMyGoal(1)
-
-
-if __name__ == "__main__":
-    pass

@@ -1,14 +1,13 @@
 """
 We only define compute_strategy here and ways to create strategies from them
 """
+import soccersimulator as soc
 import math
 
-import soccersimulator as soc
+from .soccer import action as act
+from .soccer import strategy_encapsulator as strat
 
-from .lib import action as act
-from .lib import soccertools as ut
-from .lib import strategy_encapsulator as strat
-
+from . import manager as man
 
 def createStrategy(behavior):
     return strat.SimpleStrategy(behavior)
@@ -18,6 +17,23 @@ def createStrategies(behaviors):
     for behavior in behaviors:
         strats.append(strat.SimpleStrategy(behavior))
     return strats
+
+class AutoBehavior(strat.StrategyBehavior):
+    def __init__(self):
+            strat.StrategyBehavior.__init__(self, "Auto", act.DontMove(), act.DontShoot())
+            
+    def updateActions(self, super_state):
+        state = super_state.state
+        it = super_state.it
+        ip = super_state.ip
+        actions = man.Manager.getInstance(it).getNextActions(state, ip)
+            
+        self.changeShootAction(actions[0])
+        self.changeShootAction(actions[1])
+
+class TraineeBehavior(strat.StrategyBehavior):
+    def __init__(self):
+            strat.StrategyBehavior.__init__(self, "Trainee", act.DontMove(), act.DontShoot())
 
 class FonceurBehavior(strat.StrategyBehavior):
     def __init__(self):
@@ -35,7 +51,7 @@ class AttaquantBehavior(strat.StrategyBehavior):
         
 class GoalBehaviorTeam(strat.StrategyBehavior):
     def __init__(self):
-            strat.StrategyBehavior.__init__(self, "Goal", act.RunToDefensivePos(), act.ShootToNearestAlly())
+            strat.StrategyBehavior.__init__(self, "Goal Team", act.RunToDefensivePos(), act.ShootToNearestAlly())
 
     def updateActions(self, super_state):
         if super_state.is_ball_nearest :
@@ -56,9 +72,10 @@ class GoalBehaviorTeam(strat.StrategyBehavior):
 
 class GoalBehaviorAlone(strat.StrategyBehavior):
     def __init__(self):
-            strat.StrategyBehavior.__init__(self, "Goal", act.RunToDefensivePos(), act.ShootToCornerFarFromOpp())
+            strat.StrategyBehavior.__init__(self, "Goal Alone", act.RunToDefensivePos(), act.ShootToCornerFarFromOpp())
             self.oppPos = soc.Vector2D(0,0)
             self.hasMoved = False
+            
 
     def updateActions(self, super_state):
         if not(self.hasMoved):
