@@ -5,6 +5,8 @@ class Node:
 
 class SoccerTree:
     def __init__(self, all_coords, nbPlayersPerTeam):
+        nb_combi = len(all_coords) ** (nbPlayersPerTeam * 2 + 1)
+        assert nb_combi <= 11000000, "Nombre de combinaisons plus petit que 11 millions (current : {})".format(nb_combi)
         self.root = Node()
         self.nbPlayersPerTeam = nbPlayersPerTeam
 
