@@ -3,6 +3,7 @@ from .utils.json import encode_json, decode_json
 from .soccer import discretizedterrain as d_terrain
 from .soccer import soccertools as tools
 from .soccer import action as act
+from .algo_gen import gen
 from . import strategies as strats
 import random
 
@@ -214,6 +215,7 @@ class AlgoGen :
 
     def end_match(self, team1, team2, state):
         pass
+
 
 if __name__ == "__main__":
     a = AlgoGen.getInstance()
