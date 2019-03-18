@@ -48,6 +48,24 @@ class QSoccer:
 
         self._initActions()
 
+    def getData(self, id_team, nb_player_per_team, path):
+        assert nb_player_per_team in [1,2,3,4]
+        dimension = d_terrain.DiscretizedTerrain.getInstance().getDimension()
+        key = self._computeKey(path)
+
+        if dimension in self.data[str(nb_player_per_team)]:
+            if key in self.data[str(nb_player_per_team)][str(dimension)] :
+                return self.data[str(nb_player_per_team)][str(dimension)][key][str(id_team)]
+
+        return [[act.DontMove(), act.DontShoot()]] * nb_player_per_team
+
+    def _computeKey(self, path):
+        key = ""
+        for case in path:
+            key += str(case)
+
+        return key
+
     def _initActions(self):
         moves = self.data["moves"]
         shoots = self.data["shoots"]
