@@ -20,7 +20,7 @@ class AlgoGen :
         # genetic
         self.nb_iterations = 15
         self.nb_individuals = 10
-        self.genome_size = 10
+        self.genome_size = 1
         self.steps_per_action = 30
 
         self.max_round_step = self.steps_per_action * self.genome_size # steps to test on individual
@@ -113,7 +113,7 @@ class AlgoGen :
         print("In team ", 1)
         current_iter = self.current_iteration_index
         print("FOR ITER ", current_iter, "/", self.nb_iterations - 1)
-        move_index, shoot_index = self.population[i][self.current_individual_index][self.current_gene_index]
+        move_index, shoot_index = self.population[self.current_individual_index][i][self.current_gene_index]
         actMove = self.possibleActions["moves"][self.data["moves"][move_index]]()
         actShoot = self.possibleActions["shoots"][self.data["shoots"][shoot_index]]()
         print(actMove.name, actShoot.name)
@@ -136,14 +136,15 @@ class AlgoGen :
         shoots_len = len(self.data["shoots"])
         moves_len = len(self.data["moves"])
 
-        for k in range(self.nb_player_per_team):
-            self.population.append([])
-            for i in range (self.nb_individuals) :
-                individual = []
-                for j in range(self.genome_size):
+        for i in range(self.nb_individuals):
+            ind = []
+            for j in range(self.nb_player_per_team):
+                ind.append([])
+                for k in range(self.genome_size):
                     gene = (random.randrange(0, moves_len), random.randrange(0, shoots_len))
-                    individual.append(gene)
-                self.population[k].append(individual)
+                    ind[j].append(gene)
+
+            self.population.append(ind)
 
     def begin_round(self, team1, team2, state):
         print("-------------------BEGIN ROUND--------------------")
@@ -202,6 +203,8 @@ class AlgoGen :
                 print("On a fait le tours des iterations, on arrete le match")
                 self.simu.end_match()
                 return
+
+            
 
             self.ResetFitnesses()
 
