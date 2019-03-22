@@ -14,9 +14,7 @@ todo :
 
 
 - rendre l'algo génétique qui marche pour la team 2 (au moment de sauvegarder faire un symétrique de la q_table)
-- il faut remplacer les autres trainee par des attaquants et goal dans la team1
 - de modifier manager.py pour qu'il récupère qsoccer
 - créer une méthode de récupération de données dans qsoccer, utilisée par manager.py
-- genetic algo
 - rajouter ces strats : https://github.com/NasserChaker/Projet et https://github.com/mehdibds/mon_depot
 - fitness : si la balle est proche de notre goal et que le joueur est loin, rajouter à la fitness la vitesse à laquelle le joueur se rapproche de la balle

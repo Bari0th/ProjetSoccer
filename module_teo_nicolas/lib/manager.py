@@ -1,56 +1,37 @@
+from . import qsoccer
 from .soccer import action as act
+from .soccer import discretizedterrain as d_terrain
 from .soccer import soccertools as ut
 from .soccer import strategy_encapsulator as strat
-from .soccer import discretizedterrain as d_terrain
 
-from . import qsoccer
 
 class Manager:
 
     manager = None
 
-    def __init__(self, it):
+    def __init__(self):
         """
         Singleton to compute the next actions for all players each tick
         """
         self.currentStep = -1
-        self.nextActions = []
-        self.ourTeam = it
 
     @staticmethod
-    def getInstance(id_team):
+    def getInstance():
         if not Manager.manager :
-            Manager.manager = Manager(id_team)
+            Manager.manager = Manager()
         return Manager.manager
 
-    def getNextActions(self, state, id_player):
+    def getNextActions(self, state, id_team, id_player):
         assert id_player in [0,1,2,3]
-        if state.step > self.currentStep :
-            self._computeNextActions(state)
-        return self.nextActions[id_player]
+        return self._computeNextAction(state, id_team, id_player)
 
-    def _computeNextActions(self, state):
+    def _computeNextAction(self, state, it, ip):
         self.currentStep = state.step
 
         nb_player_per_team = len(state.players) // 2
-        path = self._getPath(state)
 
-        #actions = AlgoGen.getInstance().getData(self.ourTeam, nb_player_per_team, path)
-        #self.nextActions = actions
-
-    def _getPath(self, state):
-        path = []
-        for i in range(1, 3):
-            team = [ (it, ip) for (it, ip) in state.players if it == i]
-            for it, ip in team :
-                p_state = state.player_state(it, ip)
-                pos = p_state.position
-                case = d_terrain.DiscretizedTerrain.getInstance().FromPositionToCase(pos)
-                path.append(case)
-
-        case = d_terrain.DiscretizedTerrain.getInstance().FromPositionToCase(state.ball.position)
-        path.append(case)
-        return path
+        action = qsoccer.QSoccer.get_instance(nb_player_per_team).getData(state, it, ip)
+        return action
 
 
 if __name__ == "__main__":

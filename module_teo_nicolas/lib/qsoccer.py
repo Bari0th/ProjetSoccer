@@ -16,6 +16,14 @@ step_per_epoch = 1
 
 class QSoccer:
     algo = None
+
+    @staticmethod
+    def get_instance(nb_player_per_team):
+        if QSoccer.algo is None :
+            QSoccer.algo = QSoccer(nb_player_per_team)
+        return QSoccer.algo
+        
+
     def __init__(self, nb_player_per_team):
         self.d_terrain = d_terrain.DiscretizedTerrain.getInstance()
         self.nb_player_per_team = nb_player_per_team
@@ -49,7 +57,7 @@ class QSoccer:
 
         self._initActions()
 
-    def getData(self, id_team, nb_player_per_team, path):
+    def getData(self, soccerstate, it, ip):
         assert nb_player_per_team in [1,2,3,4]
         dimension = d_terrain.DiscretizedTerrain.getInstance().getDimension()
         key = self._computeKey(path)
@@ -114,6 +122,20 @@ class QSoccer:
             soc.show_simu(self.simu) 
         else: 
             self.simu.start() 
+
+    def _getPath(self, soccerstate):
+        path = []
+        for i in range(1, 3):
+            team = [ (it, ip) for (it, ip) in soccerstate.players if it == i]
+            for it, ip in team :
+                p_state = soccerstate.player_state(it, ip)
+                pos = p_state.position
+                case = d_terrain.DiscretizedTerrain.getInstance().FromPositionToCase(pos)
+                path.append(case)
+
+        case = d_terrain.DiscretizedTerrain.getInstance().FromPositionToCase(soccerstate.ball.position)
+        path.append(case)
+        return path
 
     def _Save(self):
         q_tables_key = "q_tables"

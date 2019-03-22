@@ -26,7 +26,7 @@ class AutoBehavior(strat.StrategyBehavior):
         state = super_state.state
         it = super_state.it
         ip = super_state.ip
-        actions = man.Manager.getInstance(it).getNextActions(state, ip)
+        actions = man.Manager.getInstance().getNextActions(state, it, ip)
             
         self.changeShootAction(actions[0])
         self.changeShootAction(actions[1])

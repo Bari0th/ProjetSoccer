@@ -59,9 +59,9 @@ class SoccerTree:
     @staticmethod
     def OptimizePath(nbPlayersPerTeam, path):
         team1 = path[1 : nbPlayersPerTeam] # ignore 1st player
-        ball = [path[nbPlayersPerTeam]]
-        team2 = path[nbPlayersPerTeam + 1 :]
+        ball = [path[len(path) - 1]]
+        team2 = path[nbPlayersPerTeam : len(path) - 1]
 
         team1.sort()
         team2.sort()
-        return tuple([path[0]] + team1 + ball + team2)
+        return tuple([path[0]] + team1 + team2 + ball)
