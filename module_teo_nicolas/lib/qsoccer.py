@@ -3,6 +3,7 @@ import random
 import soccersimulator as soc
 
 from . import strategies as strats
+from . import getteam
 from .soccer import action as act
 from .soccer import discretizedterrain as d_terrain
 from .soccer import soccertools as tools
@@ -103,18 +104,8 @@ class QSoccer:
         self.step_per_epoch = step_per_epoch
         self.max_steps = self.epochs * self.step_per_epoch
 
-        team1 = soc.SoccerTeam("Jambon") 
-        team2 = soc.SoccerTeam("Beurre")
-
-        for i in range(self.nb_player_per_team):
-            strat = strats.createStrategy(strats.TraineeBehavior())
-            team1.add(strat.name + " " + str(i), strat)
-
-            if(self.nb_player_per_team == 1):
-                strat = strats.createStrategy(strats.GoalBehaviorAlone())
-            else :
-                strat = strats.createStrategy(strats.GoalBehaviorTeam())
-            team2.add(strat.name + " " + str(i), strat)
+        team1 = getteam.get_team(self.nb_player_per_team, 1)
+        team2 = getteam.get_team(self.nb_player_per_team, 2)
 
         self.simu = soc.Simulation(team1, team2, max_steps=self.max_steps) 
         self.simu.listeners += self
@@ -206,8 +197,6 @@ class QSoccer:
         return state
 
     def _OptimizeState(self, state):
-        if type(state) == type([]):
-            print("list")
         optimizedState = SoccerTree.OptimizePath(self.nb_player_per_team, list(state))
         return optimizedState
 
