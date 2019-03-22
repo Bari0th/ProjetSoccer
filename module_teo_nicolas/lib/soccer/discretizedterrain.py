@@ -11,11 +11,7 @@ class DiscretizedTerrain:
         self.WIDTH = soc.settings.GAME_WIDTH
         self.HEIGHT = soc.settings.GAME_HEIGHT
 
-        self.NOMBRE_CASES_WIDTH = 1
-        self.NOMBRE_CASES_HEIGHT = 1
-
-        self.TAILLE_CASE_WIDTH = self.WIDTH / self.NOMBRE_CASES_WIDTH
-        self.TAILLE_CASE_HEIGHT = self.HEIGHT / self.NOMBRE_CASES_HEIGHT
+        self.setDimension(2, 2)
 
     @staticmethod
     def getInstance():
@@ -64,6 +60,13 @@ class DiscretizedTerrain:
 
     def getDimension(self):
         return (self.NOMBRE_CASES_WIDTH, self.NOMBRE_CASES_HEIGHT)
+
+    def setDimension(self, NOMBRE_CASES_WIDTH, NOMBRE_CASES_HEIGHT):
+        self.NOMBRE_CASES_WIDTH = NOMBRE_CASES_WIDTH
+        self.NOMBRE_CASES_HEIGHT = NOMBRE_CASES_HEIGHT
+
+        self.TAILLE_CASE_WIDTH = self.WIDTH / self.NOMBRE_CASES_WIDTH
+        self.TAILLE_CASE_HEIGHT = self.HEIGHT / self.NOMBRE_CASES_HEIGHT
 
     def AllPossibleCoords(self):
         coords = [(x, y) for x in range(self.NOMBRE_CASES_WIDTH) for y in range(self.NOMBRE_CASES_HEIGHT)]

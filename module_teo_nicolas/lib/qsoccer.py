@@ -35,12 +35,12 @@ class QSoccer:
         
     def _initStateSpace(self):
         all_coords = self.d_terrain.AllPossibleCoords()
-        tree = SoccerTree(all_coords, self.nb_player_per_team)
-        self.states = list(map(lambda x : tuple(x), tree.paths))
+        tree = SoccerTree(all_coords, self.nb_player_per_team, self.dimension)
+        self.states = tree.paths
 
     def _initQTableAndCounts(self):
         try :
-            data_with_dim = self.data["q_tables"][str(self.dimension)]
+            data_with_dim = self.data["q_tables"][str(self.nb_player_per_team)][str(self.dimension)]
             self.q_table = data_with_dim["q_table"]
             self.counts = data_with_dim["counts"]
         except KeyError as e :
@@ -129,12 +129,16 @@ class QSoccer:
         if q_tables_key not in self.data :
             self.data[q_tables_key] = {}
 
-        dim = str(self.dimension)
-        if dim not in self.data[q_tables_key] :
-            self.data[q_tables_key][dim] = {}
+        nb_players = str(self.nb_player_per_team)
+        if nb_players not in self.data[q_tables_key] :
+            self.data[q_tables_key][nb_players] = {}
 
-        self.data[q_tables_key][dim]["q_table"] = self.q_table
-        self.data[q_tables_key][dim]["counts"] = self.counts
+        dim = str(self.dimension)
+        if dim not in self.data[q_tables_key][nb_players] :
+            self.data[q_tables_key][nb_players][dim] = {}
+
+        self.data[q_tables_key][nb_players][dim]["q_table"] = self.q_table
+        self.data[q_tables_key][nb_players][dim]["counts"] = self.counts
         
         encode_json(self.data, "q_data")
 
@@ -197,7 +201,15 @@ class QSoccer:
 
             coord = self.d_terrain.FromPositionToCase(pos)
             newState.append(coord)
-        return tuple(newState)
+
+        state = self._OptimizeState(newState)
+        return state
+
+    def _OptimizeState(self, state):
+        if type(state) == type([]):
+            print("list")
+        optimizedState = SoccerTree.OptimizePath(self.nb_player_per_team, list(state))
+        return optimizedState
 
     def _evaluate(self, soccerstate):
         if self.currentState not in self.returns :
@@ -241,6 +253,7 @@ class QSoccer:
                 print("({}, {}) : OLD = {} / NEW = {}".format(state, action, old, new))
 
     def _getQRow(self, state):
+        state = self._OptimizeState(state)
         return self.q_table[str(state)]
 
     def _getQValue(self, state, action):
@@ -252,10 +265,12 @@ class QSoccer:
         row[str(action)] = value
 
     def _getCounts(self, state, action):
+        state = self._OptimizeState(state)
         row = self.counts[str(state)]
         return row[str(action)]
     
     def _setCounts(self, state, action, value):
+        state = self._OptimizeState(state)
         row = self.counts[str(state)]
         row[str(action)] = value
 

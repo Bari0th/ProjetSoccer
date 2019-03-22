@@ -3,7 +3,7 @@ from .soccer import soccertools as ut
 from .soccer import strategy_encapsulator as strat
 from .soccer import discretizedterrain as d_terrain
 
-from .soccergen import AlgoGen
+from . import qsoccer
 
 class Manager:
 
@@ -35,8 +35,8 @@ class Manager:
         nb_player_per_team = len(state.players) // 2
         path = self._getPath(state)
 
-        actions = AlgoGen.getInstance().getData(self.ourTeam, nb_player_per_team, path)
-        self.nextActions = actions
+        #actions = AlgoGen.getInstance().getData(self.ourTeam, nb_player_per_team, path)
+        #self.nextActions = actions
 
     def _getPath(self, state):
         path = []
