@@ -12,8 +12,11 @@ todo :
 
 (Tout fait environ 10 millions de combinaisons)
 
-- _fromActionStrToTuple plus fiable
+- changer path json
+- passer des tuples a de simples ints
 - a la lecture, ne lire que les meilleurs
 - lors de la récup des teams, modifier la dimension du d_terrain
 - rajouter ces strats : https://github.com/NasserChaker/Projet et https://github.com/mehdibds/mon_depot
-- fitness : si la balle est proche de notre goal et que le joueur est loin, rajouter à la fitness la vitesse à laquelle le joueur se rapproche de la balle
+- fitness : si la balle est proche de notre goal et que le joueur est loin, rajouter à la fitness la vitesse à laquelle le joueur se rapproche de la balle, la travailler à fond
+- créer des actions pensées pour le q learning
+- améliorer exploration avec formule (softmax)
