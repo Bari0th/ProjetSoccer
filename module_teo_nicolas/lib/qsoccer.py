@@ -10,9 +10,9 @@ from .soccer import soccertools as tools
 from .utils.json import decode_json, encode_json
 from .utils.tree import SoccerTree
 
-nb_epochs = 2
-epsilon = 0.1
-step_per_epoch = 1
+nb_epochs = 5000
+epsilon = 0.9
+step_per_epoch = 100
 
 class QSoccer:
     algo = None
@@ -38,6 +38,7 @@ class QSoccer:
         self.actions = []
         self._initStateSpace()
         self._initQTableAndCounts()
+        self._initActions()
 
         # Initiate Soccer
         self.simu = None
@@ -47,6 +48,8 @@ class QSoccer:
         tree = SoccerTree(all_coords, self.nb_player_per_team, self.dimension)
         self.states = tree.paths
 
+        del tree
+
     def _initQTableAndCounts(self):
         try :
             data_with_dim = self.data["q_tables"][str(self.nb_player_per_team)][str(self.dimension)]
@@ -55,25 +58,31 @@ class QSoccer:
         except KeyError as e :
             self._newQTable()
 
-        self._initActions()
-
     def getData(self, soccerstate, it, ip):
-        assert nb_player_per_team in [1,2,3,4]
-        dimension = d_terrain.DiscretizedTerrain.getInstance().getDimension()
-        key = self._computeKey(path)
+        path = self._getPath(soccerstate)
+        if it == 2 :
+            path = self._getSymetricalPath(path)
 
-        if dimension in self.data[str(nb_player_per_team)]:
-            if key in self.data[str(nb_player_per_team)][str(dimension)] :
-                return self.data[str(nb_player_per_team)][str(dimension)][key][str(id_team)]
+        tmp = path[ip]
+        path[ip] = path[0]
+        path[0] = tmp
 
-        return [[act.DontMove(), act.DontShoot()]] * nb_player_per_team
+        path = self._OptimizeState(path)
 
-    def _computeKey(self, path):
-        key = ""
-        for case in path:
-            key += str(case)
+        q_row = self._getQRow(path)
 
-        return key
+        move_index, shoot_index = self._fromActionStrToTuple(self._getBest(q_row))
+
+        actMove = self.possibleActions["moves"][self.data["moves"][move_index]]()
+        actShoot = self.possibleActions["shoots"][self.data["shoots"][shoot_index]]()
+        return actMove, actShoot
+
+    def _getSymetricalPath(self, path):
+        s_path = self.d_terrain.GetSymetricals(path)
+        team2 = list(s_path[ : self.nb_player_per_team])
+        team1 = list(s_path[self.nb_player_per_team : len(s_path) - 1])
+
+        return team1 + team2 + [s_path[len(s_path) - 1]]
 
     def _initActions(self):
         moves = self.data["moves"]
@@ -85,6 +94,8 @@ class QSoccer:
             for j in range(shoots_len):
                 key = (i , j)
                 self.actions.append(key)
+
+        self.currentAction = str(self._getA0())
 
 
     def _newQTable(self):
@@ -138,6 +149,7 @@ class QSoccer:
         return path
 
     def _Save(self):
+        print("Saving...")
         q_tables_key = "q_tables"
         if q_tables_key not in self.data :
             self.data[q_tables_key] = {}
@@ -154,6 +166,8 @@ class QSoccer:
         self.data[q_tables_key][nb_players][dim]["counts"] = self.counts
         
         encode_json(self.data, "q_data")
+
+        print("saved")
 
     def _Load(self):
         try:
@@ -178,27 +192,49 @@ class QSoccer:
     def _getA0(self):
         return random.choice(self.actions)
 
-    def _get_ith_player_behavior(self, team, i):
-        return team.players[i].strategy.behavior
+    def _get_ith_player_behavior(self, team):
+        return team.players[0].strategy.behavior
 
-    def _get_current_action_for_ith_player(self, i):
-        self.currentAction = self._getA0()
-        move_index, shoot_index = self.currentAction
+    def _fromActionStrToTuple(self, action_str):
+        """
+        Way too fragile TODO NR : corriger ça 
+        """
+        l = list(action_str) # ['(', '0', ',', ' ' , '5', ')']
+        mindex = int(l[1])
+        sindex = int(l[4])
+        return (mindex, sindex)
+
+    def _get_current_action_for_ith_player(self):
+        move_index, shoot_index = self._fromActionStrToTuple(self.currentAction)
         actMove = self.possibleActions["moves"][self.data["moves"][move_index]]()
         actShoot = self.possibleActions["shoots"][self.data["shoots"][shoot_index]]()
         return actMove, actShoot
 
     def _getNextAction(self, act_probs):
         if (random.random() < self.epsilon):
-            return self._getA0()
+            return str(self._getA0())
+
+        return self._getBest(act_probs)
+
+    def _getBest(self, act_probs):
         best = None
         bestVal = 0
         for action in act_probs :
-            if bestVal < act_probs[action] or best is None :
+            if (bestVal < act_probs[action]) or best is None :
                 best = action
                 bestVal = act_probs[action]
 
         return best
+
+    def _getWorst(self, act_probs):
+        worst = None
+        worstVal = 0
+        for action in act_probs :
+            if (worstVal > act_probs[action]) or worst is None :
+                worst = action
+                worstVal = act_probs[action]
+
+        return worst
 
     def _getNextState(self, soccerstate):
         newState = []
@@ -250,9 +286,9 @@ class QSoccer:
 
 
     def _updatePlayerBehavior(self, team):
-        m, s = self._get_current_action_for_ith_player(0)
-        self._get_ith_player_behavior(team, 0).changeMoveAction(m)
-        self._get_ith_player_behavior(team, 0).changeShootAction(s)
+        m, s = self._get_current_action_for_ith_player()
+        self._get_ith_player_behavior(team).changeMoveAction(m)
+        self._get_ith_player_behavior(team).changeShootAction(s)
 
     def _updateQTable(self):
         for state in self.returns :
@@ -261,7 +297,7 @@ class QSoccer:
                 count = self._getCounts(state, action)
                 new = old + (1.0 / count) * (self.returns[state][action] - old)
                 self._setQValue(state, action, new)
-                print("({}, {}) : OLD = {} / NEW = {}".format(state, action, old, new))
+                # print("({}, {}) : OLD = {} / NEW = {}".format(state, action, old, new))
 
     def _getQRow(self, state):
         state = self._OptimizeState(state)
@@ -285,11 +321,55 @@ class QSoccer:
         row = self.counts[str(state)]
         row[str(action)] = value
 
+    def printBestsAndWorsts(self):
+        count = {"worst" : {}, "best" : {}}
+        dico = {"states" : {}}
+        dico["count"] = count
+        for state in self.states :
+            row = self._getQRow(state)
+            best = self._getBest(row)
+            worst = self._getWorst(row)
+
+            move_index, shoot_index = self._fromActionStrToTuple(best)
+
+            bestMove = self.possibleActions["moves"][self.data["moves"][move_index]]().name
+            bestShoot = self.possibleActions["shoots"][self.data["shoots"][shoot_index]]().name
+
+            move_index, shoot_index = self._fromActionStrToTuple(worst)
+
+            worstMove = self.possibleActions["moves"][self.data["moves"][move_index]]().name
+            worstShoot = self.possibleActions["shoots"][self.data["shoots"][shoot_index]]().name
+
+            dico["states"][str(state)] = "{} : Best = ({}, {}) Worst = ({}, {})".format(state, bestMove, bestShoot, worstMove, worstShoot)
+
+            print(dico["states"][str(state)])
+
+            if bestMove not in count['best'] :
+                count["best"][bestMove] = 0
+
+            if bestShoot not in count['best'] :
+                count['best'][bestShoot] = 0
+
+            if worstMove not in count['worst'] :
+                count['worst'][worstMove] = 0
+            
+            if worstShoot not in count['worst'] :
+                count['worst'][worstShoot] = 0
+
+            count['best'][bestMove] += 1
+            count['best'][bestShoot] += 1
+            count['worst'][worstMove] += 1
+            count['worst'][worstShoot] += 1
+        
+        print(count)
+        encode_json(dico, "worstbest-{}-{}".format(self.nb_player_per_team, self.dimension))
+            
+
     def begin_match(self, team1, team2, state):
         pass
 
     def begin_round(self, team1, team2, state):
-        print("-------------------BEGIN ROUND--------------------")
+        #print("-------------------BEGIN ROUND--------------------")
         self.currentState = self._getS0()
         for i in range (len(self.currentState)):
             coord = self.currentState[i]
@@ -322,16 +402,19 @@ class QSoccer:
         self._evaluate(state)
         self._updateQTable()
 
-        print("Le round est fini, on passe à l'epoch suivante et on recommence au premier gene")
+        #print("Le round est fini, on passe à l'epoch suivante et on recommence au premier gene")
         self.current_epoch += 1
         self.current_epoch %= self.epochs
         
         if self.current_epoch == 0 :
-            print("On a fait le tours des epochs, on arrete le match")
+            #print("On a fait le tours des epochs, on arrete le match")
             self.simu.end_match()
             return
 
-        print("Current epoch : {}".format(self.current_epoch))
+        if self.current_epoch % 1000 == 0 :
+            self._Save()
+
+        print("Current epoch : {} / {}".format(self.current_epoch, self.epochs))
 
     def end_match(self, team1, team2, state):
         self._Save()

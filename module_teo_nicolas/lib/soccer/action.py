@@ -49,7 +49,7 @@ class DontMove(Move):
 
 class RunToBall(Move):
 	def __init__(self):
-		Move.__init__(self, "Ball")
+		Move.__init__(self, "RunToBall")
 
 	def computeAction(self, superstate):
 		return soc.SoccerAction( acceleration = superstate.vect_play_ball)

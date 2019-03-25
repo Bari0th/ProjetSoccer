@@ -1,4 +1,4 @@
-from .lib.strategies import GoalBehaviorAlone, createStrategy, GoalBehaviorTeam, AttaquantBehavior
+from .lib.strategies import GoalBehaviorAlone, createStrategy, GoalBehaviorTeam, AttaquantBehavior, AutoBehavior
 import soccersimulator as soc
 
 def get_team ( nb_players ):

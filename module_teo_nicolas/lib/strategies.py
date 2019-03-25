@@ -28,7 +28,7 @@ class AutoBehavior(strat.StrategyBehavior):
         ip = super_state.ip
         actions = man.Manager.getInstance().getNextActions(state, it, ip)
             
-        self.changeShootAction(actions[0])
+        self.changeMoveAction(actions[0])
         self.changeShootAction(actions[1])
 
 class TraineeBehavior(strat.StrategyBehavior):

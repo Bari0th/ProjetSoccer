@@ -13,7 +13,7 @@ class Manager:
         """
         Singleton to compute the next actions for all players each tick
         """
-        self.currentStep = -1
+        pass
 
     @staticmethod
     def getInstance():
@@ -26,8 +26,6 @@ class Manager:
         return self._computeNextAction(state, id_team, id_player)
 
     def _computeNextAction(self, state, it, ip):
-        self.currentStep = state.step
-
         nb_player_per_team = len(state.players) // 2
 
         action = qsoccer.QSoccer.get_instance(nb_player_per_team).getData(state, it, ip)

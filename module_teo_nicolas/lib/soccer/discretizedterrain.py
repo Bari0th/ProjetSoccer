@@ -11,7 +11,7 @@ class DiscretizedTerrain:
         self.WIDTH = soc.settings.GAME_WIDTH
         self.HEIGHT = soc.settings.GAME_HEIGHT
 
-        self.setDimension(2, 2)
+        self.setDimension(3, 3)
 
     @staticmethod
     def getInstance():
@@ -56,6 +56,16 @@ class DiscretizedTerrain:
         Y = random.uniform(minY, maxY)
 
         return soc.Vector2D(X, Y)
+
+    def GetSymetricals(self, coords):
+        sym = [] 
+        center = soc.Vector2D(self.NOMBRE_CASES_WIDTH - 1, self.NOMBRE_CASES_HEIGHT - 1) / 2
+        for x, y in coords:
+            nx = int(2 * center.x - x)
+            ny = int(2 * center.y - y)
+            sym.append((nx, ny))
+
+        return sym
         
 
     def getDimension(self):
@@ -76,5 +86,6 @@ class DiscretizedTerrain:
 if __name__ == "__main__":
     d = DiscretizedTerrain.getInstance()
     coords = d.AllPossibleCoords()
-    for coord in coords :
-        print(d.FromCaseToPosition(coord))
+    s_coords = d.GetSymetricals(coords)
+    for i in range(len(coords)) :
+        print("Symétrique de {} : {}".format(coords[i], s_coords[i]))
