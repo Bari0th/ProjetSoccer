@@ -6,6 +6,6 @@ def get_team ( nb_players ):
 	if nb_players == 1:
 		team.add ( " Lone Wolf " , createStrategy(GoalBehaviorAlone()))
 	if nb_players == 2:
-		team.add ( " SNK " , createStrategy(AttaquantBehavior()))
-		team.add ( " Mark Evans " , createStrategy(GoalBehaviorTeam()))
+		team.add ( " Attaquant " , strat.createStrategy(strat.AttaquantBehavior()))
+		team.add ( " Goal " , strat.createStrategy(strat.newGoalBehaviorTeam()))
 	return team

@@ -139,8 +139,8 @@ class SuperState:
         return min([(opp.position.distance(self.opp_goal), opp) for opp in self.opponents], key=self.key)[1]
 
     @property
-    def is_opp_goal_nearer_than_opp(self):
-        return (self.player_pos.distance(self.opp_goal) - self.nearest_opp_goal_opp.position.distance(self.opp_goal)) > 0
+    def is_opp_goal_nearer(self):
+        return self.player_pos.distance(self.opp_goal) < self.nearest_opp_goal_opp.position.distance(self.opp_goal)
 	
     @property
     def ally_goal(self):
@@ -224,6 +224,18 @@ class SuperState:
     @property
     def is_ball_near_our_goal(self):
         return abs((self.ball_pos - self.ally_goal).x) < 60
+
+    @property
+    def is_attacked(self):
+        return all([((opp.position.distance(self.player_pos) < 10) and ((opp.player_vit.angle - self.player_pos.angle) < math.pi / 1.5)) for opp in self.opponents()])
+
+    @property
+    def is_team_is_ball_nearest(self):
+        return nearest_ball_ally == nearest_ball_player
+
+    @property
+    def is_from_allies_our_goal_nearest(self):
+        return all([ally.position.distance(self.ally_goal) < self.player_pos.distance(ally_goal) for ally in self.allies])
 
 
         
