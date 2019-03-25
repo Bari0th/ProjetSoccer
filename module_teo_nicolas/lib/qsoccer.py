@@ -10,7 +10,7 @@ from .soccer import soccertools as tools
 from .utils.json import decode_json, encode_json
 from .utils.tree import SoccerTree
 
-nb_epochs = 5000
+nb_epochs = 50
 epsilon = 0.9
 step_per_epoch = 100
 
@@ -322,46 +322,26 @@ class QSoccer:
         row[str(action)] = value
 
     def printBestsAndWorsts(self):
-        count = {"worst" : {}, "best" : {}}
         dico = {"states" : {}}
-        dico["count"] = count
         for state in self.states :
             row = self._getQRow(state)
             best = self._getBest(row)
             worst = self._getWorst(row)
 
-            move_index, shoot_index = self._fromActionStrToTuple(best)
+            bestMoveI, bestShootI = self._fromActionStrToTuple(best)
 
-            bestMove = self.possibleActions["moves"][self.data["moves"][move_index]]().name
-            bestShoot = self.possibleActions["shoots"][self.data["shoots"][shoot_index]]().name
+            bestMove = self.possibleActions["moves"][self.data["moves"][bestMoveI]]().name
+            bestShoot = self.possibleActions["shoots"][self.data["shoots"][bestShootI]]().name
 
             move_index, shoot_index = self._fromActionStrToTuple(worst)
 
             worstMove = self.possibleActions["moves"][self.data["moves"][move_index]]().name
             worstShoot = self.possibleActions["shoots"][self.data["shoots"][shoot_index]]().name
 
-            dico["states"][str(state)] = "{} : Best = ({}, {}) Worst = ({}, {})".format(state, bestMove, bestShoot, worstMove, worstShoot)
+            dico["states"][str(state)] = (bestMoveI, bestShootI)
 
-            print(dico["states"][str(state)])
-
-            if bestMove not in count['best'] :
-                count["best"][bestMove] = 0
-
-            if bestShoot not in count['best'] :
-                count['best'][bestShoot] = 0
-
-            if worstMove not in count['worst'] :
-                count['worst'][worstMove] = 0
-            
-            if worstShoot not in count['worst'] :
-                count['worst'][worstShoot] = 0
-
-            count['best'][bestMove] += 1
-            count['best'][bestShoot] += 1
-            count['worst'][worstMove] += 1
-            count['worst'][worstShoot] += 1
+            print("{} : Best = ({}, {}) Worst = ({}, {})".format(state, bestMove, bestShoot, worstMove, worstShoot))
         
-        print(count)
         encode_json(dico, "worstbest-{}-{}".format(self.nb_player_per_team, self.dimension))
             
 
@@ -411,7 +391,7 @@ class QSoccer:
             self.simu.end_match()
             return
 
-        if self.current_epoch % 1000 == 0 :
+        if self.current_epoch % 1000 == 1 :
             self._Save()
 
         print("Current epoch : {} / {}".format(self.current_epoch, self.epochs))
