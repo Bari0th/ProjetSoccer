@@ -10,7 +10,7 @@ from .soccer import soccertools as tools
 from .utils.json import decode_json, encode_json
 from .utils.tree import SoccerTree
 
-nb_epochs = 50
+nb_epochs = 5000
 epsilon = 0.9
 step_per_epoch = 100
 
@@ -30,7 +30,7 @@ class QSoccer:
         self.terrain = tools.TerrainData.getInstance()
 
         self.dimension = self.d_terrain.getDimension()
-        self.possibleActions = act.getAllActions()
+        self.possibleActions = act.getAllActions(self.nb_player_per_team)
 
         self.data = self._Load()
 

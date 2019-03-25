@@ -33,7 +33,7 @@ class AutoBehavior(strat.StrategyBehavior):
 
 class TraineeBehavior(strat.StrategyBehavior):
     def __init__(self):
-            strat.StrategyBehavior.__init__(self, "Trainee", act.DontMove(), act.DontShoot())
+            strat.StrategyBehavior.__init__(self, "Trainee", act.RunToPredictBall(), act.ShootToGoal())
 
 class FonceurBehavior(strat.StrategyBehavior):
     def __init__(self):
