@@ -54,7 +54,9 @@ class SoccerTree:
 
     def _LoadPaths(self, all_coords):
         self.CreateTree(all_coords, self.root)
-        self.paths = self.getKeysFromPaths(self.GetPaths(self.root))
+        paths = self.GetPaths(self.root)
+        self.paths = self.getKeysFromPaths(paths)
+        print()
     
     @staticmethod
     def OptimizePath(nbPlayersPerTeam, path):
