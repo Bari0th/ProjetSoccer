@@ -1,4 +1,4 @@
-from .lib.strategies import GoalBehaviorAlone, createStrategy, GoalBehaviorTeam, AttaquantBehavior, AutoBehavior
+from .lib.strategies import GoalBehaviorAlone, createStrategy, GoalBehaviorTeam, AttaquantBehavior, newGoalBehaviorTeam
 import soccersimulator as soc
 
 def get_team ( nb_players ):
@@ -7,10 +7,10 @@ def get_team ( nb_players ):
 		team.add ( " Lone Wolf " , createStrategy(GoalBehaviorAlone()))
 	if nb_players == 2:
 		team.add ( " SNK " , createStrategy(AttaquantBehavior()))
-		team.add ( " Mark Evans " , createStrategy(GoalBehaviorTeam()))
+		team.add ( " Mark Evans " , createStrategy(newGoalBehaviorTeam()))
 	if nb_players == 4:
 		team.add ( " SNK " , createStrategy(AttaquantBehavior()))
-		team.add ( " Mark Evans " , createStrategy(GoalBehaviorTeam()))
+		team.add ( " Mark Evans " , createStrategy(newGoalBehaviorTeam()))
 		team.add ( " Mark Evans " , createStrategy(AttaquantBehavior()))
 		team.add ( " Mark Evans " , createStrategy(AutoBehavior()))
 	return team

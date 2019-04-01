@@ -56,18 +56,36 @@ class GoalBehaviorTeam(strat.StrategyBehavior):
     def updateActions(self, super_state):
         if super_state.is_ball_nearest :
             self.changeMoveAction(act.RunToPredictBall())
-            if ((super_state.opp_goal - super_state.player_pos).angle - (super_state.nearest_ally.position - super_state.player_pos).angle) < math.pi/4:
+            if ((super_state.opp_goal - super_state.player_pos).angle - (super_state.nearest_ally.position - super_state.player_pos).angle) < math.pi/3:
                 self.changeShootAction(act.ShootToNearestAllyFarFromOpponent())
-            elif ((super_state.player_pos - super_state.opp_goal).norm < 30) and not(super_state.is_opp_goal_nearer_than_opp):
+            elif ((super_state.player_pos - super_state.opp_goal).norm < 30) and (super_state.is_opp_goal_nearer):
                 self.changeShootAction(act.StrongShootToGoal())
             else :
                 self.changeShootAction(act.ShootToMoveToGoal())
 
         else :
+            self.changeShootAction(act.ShootToNearestAllyFarFromOpponent())
             if super_state.is_ball_near_our_goal :
                 self.changeMoveAction(act.RunToCloseDefensivePos())
             else :self.changeMoveAction(act.RunToDefensivePos())
-            self.changeShootAction(act.ShootToGoal())   
+
+class newGoalBehaviorTeam(strat.StrategyBehavior):
+    def __init__(self):
+            strat.StrategyBehavior.__init__(self, "Goal", act.RunToDefensivePos(), act.ShootToNearestAlly())
+
+    def updateActions(self, super_state):
+        if super_state.is_ball_nearest :
+            self.changeMoveAction(act.RunToPredictBall())
+            if ((super_state.opp_goal - super_state.player_pos).angle - (super_state.nearest_ally.position - super_state.player_pos).angle) < math.pi/3:
+                self.changeShootAction(act.ShootToNearestAllyFarFromOpponent())
+            elif ((super_state.player_pos - super_state.opp_goal).norm < 30) and (super_state.is_opp_goal_nearer):
+                self.changeShootAction(act.StrongShootToGoal())
+            else :
+                self.changeShootAction(act.ShootToMoveToGoal())
+
+        else :
+            self.changeShootAction(act.ShootToNearestAllyFarFromOpponent())
+            self.changeMoveAction(act.RunToCloseDefensivePos())
 
 
 class GoalBehaviorAlone(strat.StrategyBehavior):
@@ -94,11 +112,11 @@ class GoalBehaviorAlone(strat.StrategyBehavior):
         else :
             self.changeMoveAction(act.RunToDefensivePos()) 
             if super_state.ball_in_corner:
-                self.changeMoveAction(act.RunToDefensivePos())
-                self.changeShootAction(act.ShootToCornerFarFromOpp())
+                self.changeMoveAction(act.RunToCloseDefensivePos())
+                self.changeShootAction(act.ShootToGoal())
             elif super_state.is_ball_nearest :
                 self.changeMoveAction(act.RunToPredictBall())
-                if not(super_state.is_opp_goal_nearer_than_opp) :
+                if (super_state.is_opp_goal_nearer) :
                     self.changeShootAction(act.ShootToMoveToGoal())
                 else : 
                     self.changeShootAction(act.ShootToCornerFarFromOpp())
@@ -107,3 +125,35 @@ class GoalBehaviorAlone(strat.StrategyBehavior):
                 if super_state.is_ball_near_our_goal :
                     self.changeMoveAction(act.RunToCloseDefensivePos())
                 else :self.changeMoveAction(act.RunToDefensivePos())
+
+        
+class Att_Def_BehaviorTeam(strat.StrategyBehavior):
+    def __init__(self):
+            strat.StrategyBehavior.__init__(self, "Att / Def", act.RunToDefensivePos(), act.ShootToNearestAlly())
+
+    def updateActions(self, super_state):
+        if super_state.is_ball_nearest :
+            self.changeMoveAction(act.RunToPredictBall())
+            if super_state.is_opp_goal_nearer:
+                if ((super_state.player_pos - super_state.opp_goal).norm < 30):
+                    self.changeShootAction(act.StrongShootToGoal())
+                else: 
+                    self.changeShootAction(act.ShootToMoveToGoal())
+            elif super_state.is_attacked:
+                self.changeShootAction(act.OffensivePass())
+            else :
+                self.changeShootAction(act.ShootToOffensivePos())
+
+        elif super_state.is_team_is_ball_nearest:
+            self.changeMoveAction(act.MoveToOffensivePos())
+
+        elif super_state.is_from_allies_our_goal_nearest:
+            self.changeShootAction(act.ShootToNearestAllyFarFromOpponent())
+            if super_state.is_ball_near_our_goal :
+                self.changeMoveAction(act.RunToCloseDefensivePos())
+            else :self.changeMoveAction(act.RunToDefensivePos())
+    
+
+
+
+
