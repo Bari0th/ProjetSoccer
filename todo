@@ -19,4 +19,6 @@ todo :
 - rajouter ces strats : https://github.com/NasserChaker/Projet et https://github.com/mehdibds/mon_depot
 - fitness : si la balle est proche de notre goal et que le joueur est loin, rajouter à la fitness la vitesse à laquelle le joueur se rapproche de la balle, la travailler à fond
 - créer des actions pensées pour le q learning
+
+
 - améliorer exploration avec formule (softmax)

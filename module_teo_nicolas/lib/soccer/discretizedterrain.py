@@ -11,7 +11,7 @@ class DiscretizedTerrain:
         self.WIDTH = soc.settings.GAME_WIDTH
         self.HEIGHT = soc.settings.GAME_HEIGHT
 
-        self.setDimension(6, 6)
+        self.setDimension(2,2)
 
     @staticmethod
     def getInstance():
