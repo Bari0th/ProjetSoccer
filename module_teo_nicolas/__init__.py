@@ -12,5 +12,5 @@ def get_team ( nb_players ):
 		team.add ( " SNK " , createStrategy(AttaquantBehavior()))
 		team.add ( " Mark Evans " , createStrategy(newGoalBehaviorTeam()))
 		team.add ( " Mark Evans " , createStrategy(AttaquantBehavior()))
-		team.add ( " Mark Evans " , createStrategy(AutoBehavior()))
+		team.add ( " Mark Evans " , createStrategy(newGoalBehaviorTeam()))
 	return team
