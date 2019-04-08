@@ -2,11 +2,16 @@
 import soccersimulator as soc
 import math
 from module_teo.lib import strategies as st
+from volleyball_question2 import StrategyAttaque
+from volleyball_question3 import StrategyDefense
 
 from module_teo.lib.soccer import action as act
 from module_teo.lib.soccer import strategy_encapsulator as strat
 
-class StrategyAttaque(strat.StrategyBehavior):
+
+
+
+class StrategyAttaqueEn1V1(strat.StrategyBehavior):
     def __init__(self):
             strat.StrategyBehavior.__init__(self, "Echauffement", act.RunToPredictBall(), act.ShootFarFromOpp())
             self.hasshot = False
@@ -19,7 +24,7 @@ class StrategyAttaque(strat.StrategyBehavior):
                 else :
                     self.changeShootAction(act.Wait())
             else :
-                self.changeMoveAction(act.RunToBall())
+                self.changeMoveAction(act.RunToPredictBall())
                 if super_state.far_from_middle :
                     self.changeShootAction(act.GoMiddle())
                 else :
@@ -28,13 +33,14 @@ class StrategyAttaque(strat.StrategyBehavior):
                         self.hasshot = True
         else :
             self.hasshot = False
-            self.changeMoveAction(act.Replace())
+            self.changeMoveAction(act.SmartReplace())
+
 
 if __name__ == '__main__':
     team1 = soc.SoccerTeam ( name = "Bumper")
     team2 = soc.SoccerTeam ( name = "Glouteur")
-    team1.add ( "Bumper 1" , st.createStrategy(StrategyAttaque()))
-    team2.add ( "Glouteur 1" , st.createStrategy(StrategyAttaque()))
+    team1.add ( "Bumper 1" , st.createStrategy(StrategyAttaqueEn1V1()))
+    team2.add ( "Glouteur 1" , st.createStrategy(StrategyAttaqueEn1V1()))
 
 
 

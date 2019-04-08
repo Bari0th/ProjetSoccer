@@ -36,9 +36,37 @@ class SuperState:
         return self.ball_pos.x * (self.it * 2 - 3) > 90 * (self.it * 2 - 3)
 
     @property
-    def my_center(self):
-        return soc.Vector2D(soc.GAME_WIDTH / 2 + soc.GAME_WIDTH / 4  * (self.it * 2 - 3) ,soc.GAME_HEIGHT/2.)
+    def ball_in_my_part_right(self):
+        return self.ball_pos.x * (self.it * 2 - 3) > 90 * (self.it * 2 - 3) and self.ball_pos.y > 45
 
+    @property
+    def ball_in_my_part_left(self):
+        return self.ball_pos.x * (self.it * 2 - 3) > 90 * (self.it * 2 - 3) and self.ball_pos.y < 45
+
+    @property
+    def my_center(self):
+        return soc.Vector2D(soc.GAME_WIDTH / 2 + soc.GAME_WIDTH / 4.  * (self.it * 2 - 3) ,soc.GAME_HEIGHT/2.)
+
+    @property
+    def my_center_bis(self):
+        return soc.Vector2D(soc.GAME_WIDTH / 2 + soc.GAME_WIDTH / 6.  * (self.it * 2 - 3) ,soc.GAME_HEIGHT/2.)
+
+    @property
+    def far_spot_from_opp(self):
+        return max([(self.nearest_opp.position.distance(pos) * 1.6 - self.player_pos.distance(pos), pos) for pos in self.spot], key=self.key)[1]
+
+    @property
+    def spot(self): 
+        return [soc.Vector2D( 5 + -1 * (self.it - 2) * soc.GAME_WIDTH / 2., 5), soc.Vector2D( 85 + -1 * (self.it - 2) * soc.GAME_WIDTH / 2. ,5), soc.Vector2D( 5 + -1 * (self.it - 2) * soc.GAME_WIDTH / 2., 85), soc.Vector2D( 85 + -1 * (self.it - 2) * soc.GAME_WIDTH / 2., 85)]
+
+    def calculate_strength(self, vector):
+        coeff = vector.norm / 100. * 6
+        vector.normalize()
+        return vector * coeff
+
+    @property
+    def far_from_middle(self):
+        return (self.player_pos.x - 90) * (self.it * 2 - 3) > 30
 
     @property
     def getTheOtherGoal(self):
@@ -161,9 +189,9 @@ class SuperState:
 
     @property
     def coeff_distance(self):
-        if self.dist_play_ball > 15 : 
-            return 10
-        return self.dist_play_ball / 15
+        if self.dist_play_ball > 40 : 
+            return 4
+        return self.dist_play_ball / 40
 
     @property
     def ally_goal_top(self):

@@ -1,0 +1,10 @@
+Pour l'attaque, l'attaquant repaire 4 spot qui sont les coins du terrain adverse
+et il shoot vers celui dont l'adversaire est le plus proche, et lui le plus près.
+
+Pour la défense, le joueur reste en face de l'adversaire, tout en étant assez vers
+le milieu si jamais l'adversaire venait à tirer loin.
+
+On attaque comme le 1er attaquant et on défend comme le second en se suivant les
+mouvements de l'adversaire
+
+1 attaquant s'occupe d'en haut (la droite) et 1 d'en bas (la gauche)

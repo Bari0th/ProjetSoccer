@@ -26,9 +26,20 @@ class ShootFarFromOpp(Shoot):
 	def __init__(self):
 		Shoot.__init__(self, "ShootFarOpp")
 	def computeAction(self, superstate):
-		shoot = (superstate.nearest_ally.position - superstate.player_pos).normalize() * 6
-		shoot.angle += (math.pi / 12 * math.copysign(1, shoot.angle - (superstate.nearest_opp.position - superstate.player_pos).angle))
-		return soc.SoccerAction( shoot = shoot )
+		return soc.SoccerAction( shoot = superstate.calculate_strength(superstate.far_spot_from_opp - superstate.player_pos) )
+
+class GoMiddle(Shoot):
+	def __init__(self):
+		Shoot.__init__(self, "GoMiddle")
+	def computeAction(self, superstate):
+		return soc.SoccerAction( shoot = superstate.calculate_strength(superstate.player_pos - soc.Vector2D(-90 + superstate.player_pos.x, (-45 + superstate.player_pos.y) / 2 ) - superstate.player_pos) )
+
+
+class Wait(Shoot):
+	def __init__(self):
+		Shoot.__init__(self, "Wait")
+	def computeAction(self, superstate):
+		return soc.SoccerAction()
 
 
 class RunToBall(Move):
@@ -42,7 +53,7 @@ class RunToPredictBall(Move):
 	def __init__(self):
 		Move.__init__(self, "RunToPredictBall")
 	def computeAction(self, superstate):
-		return soc.SoccerAction( acceleration = (superstate.vect_play_ball + superstate.ball_vit * 30 * superstate.coeff_distance) )
+		return soc.SoccerAction( acceleration = (superstate.vect_play_ball + superstate.ball_vit * 10 * superstate.coeff_distance) )
 
 class Replace(Move):
 	def __init__(self):
@@ -50,6 +61,27 @@ class Replace(Move):
 
 	def computeAction(self, superstate):
 		return soc.SoccerAction( acceleration = superstate.my_center - superstate.player_pos)
+
+class SmartReplace(Move):
+	def __init__(self):
+		Move.__init__(self, "SmartReplace")
+
+	def computeAction(self, superstate):
+		return soc.SoccerAction( acceleration = (soc.Vector2D(superstate.my_center_bis.x, superstate.nearest_opp.position.y) - superstate.player_pos))
+
+class SmartReplaceRight(Move):
+	def __init__(self):
+		Move.__init__(self, "SmartReplace")
+
+	def computeAction(self, superstate):
+		return soc.SoccerAction( acceleration = (soc.Vector2D(superstate.my_center_bis.x, superstate.nearest_opp.position.y * 1.5 - 15) - superstate.player_pos))
+
+class SmartReplaceLeft(Move):
+	def __init__(self):
+		Move.__init__(self, "SmartReplace")
+
+	def computeAction(self, superstate):
+		return soc.SoccerAction( acceleration = (soc.Vector2D(superstate.my_center_bis.x, superstate.nearest_opp.position.y / 2 + 15 ) - superstate.player_pos))
 
 class RunToDefensivePos(Move):
 	def __init__(self):
